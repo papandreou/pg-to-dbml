@@ -40,7 +40,7 @@ Options:
   --db, --db_name          database name you want to create dbml file(s) from.
                                                                       [required]
   -t, --timeout            how long you want process to run before it exits
-                           process.                              [default: 5000]****
+                           process.                              [default: 5000]
 ```
 ### Example Usage
 
