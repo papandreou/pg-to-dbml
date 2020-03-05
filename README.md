@@ -43,7 +43,7 @@ Options:
                            process.                              [default: 5000]****
 ```
 ### Example Usage
-
+`pg-to-dbml --db=DB_NAME --c=postgresql://USER:PASSWORD@HOST:PORT -o='../'`
 ## Linting
 
 We are using ESLint to lint our code as we code and when we push our code. For configuring, see `.eslintrc.js` and `.prettierrc`.
