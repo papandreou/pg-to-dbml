@@ -30,7 +30,7 @@ from pg_catalog.pg_namespace;`;
 const tablesInSchemaQuery = schemaName =>
   `select tablename from pg_tables where schemaname='${schemaName}'`;
 const tableColumnInfoQuery = tableName => `select cols.column_name, cols.column_default, cols.is_nullable, cols.data_type, cols.udt_name, cols.character_maximum_length, cols.datetime_precision,
-(select pg_catalog.col_description(oid,cols.ordinal_position::int) from pg_catalog.pg_class c where c.relname=cols.table_name) as column_comment
+(select MAX(pg_catalog.col_description(oid,cols.ordinal_position::int)) from pg_catalog.pg_class c where c.relname=cols.table_name) as column_comment
 from information_schema.columns cols
 where cols.table_catalog='${db}' and cols.table_name='${tableName}'`;
 
@@ -66,7 +66,7 @@ function tableColumnInfoQueryFunc(tableNameArr, schemaName) {
   tableNameArr.forEach(tableName => {
     const query = tableColumnInfoQuery(tableName);
     dbClient.query(query, (err, res) => {
-      if (err) throw new Error(err);
+      if (err) throw new Error(`${tableName}: ${err}`);
       writeToDBML(res.rows, tableName, schemaName);
     });
   });

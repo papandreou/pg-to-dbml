@@ -19,5 +19,16 @@
     "pg": "^7.18.2",
     "yargs": "^15.1.0"
   },
-  "bin": "index.js"
+  "bin": {
+    "pg-to-dbml": "index.js"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/polarislabs/pg-to-dbml.git"
+  },
+  "bugs": {
+    "url": "https://github.com/polarislabs/pg-to-dbml/issues"
+  },
+  "homepage": "https://github.com/polarislabs/pg-to-dbml#readme"
 }
