@@ -85,10 +85,8 @@ function tablesInSchemaFunc(schemaNameArr) {
       const tableNameArr = res.rows.map(row => row.tablename);
       const fileName = `${o || './'}${schemaName}.dbml`
       if(fs.existsSync(fileName, fs.constants.R_OK | fs.constants.W_OK)) {
-        console.log(fileName + " The file exists.");
-    } else {
-        console.log(fileName + ' The file does not exist.');
-    }
+        fs.writeFileSync(fileName, '', ()=> {});
+      }
       tableColumnInfoQueryFunc(tableNameArr, schemaName, fileName);
     });
   });
