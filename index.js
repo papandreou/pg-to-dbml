@@ -21,9 +21,13 @@ const argv = require('yargs')
     .argv
 const { c, db, o, t} = argv;
 const dbClient = new Client({
-  connectionString: c
+  connectionString: `${c}/${db}`
 });
-dbClient.connect();
+try {
+    dbClient.connect(); 
+} catch (err) {
+    process.exit(err)
+}
 
 const schemasQuery = `select nspname
 from pg_catalog.pg_namespace;`;
@@ -34,7 +38,7 @@ const tableColumnInfoQuery = tableName => `select cols.column_name, cols.column_
 from information_schema.columns cols
 where cols.table_catalog='${db}' and cols.table_name='${tableName}'`;
 
-function writeToDBML(columnsAndcolumnInfo, tableName, schemaName) {
+function writeToDBML(columnsAndcolumnInfo, tableName, schemaName, fileName) {
   const convertToDBML = columnsAndcolumnInfo.map(col => {
     const characterVarying = col.data_type === 'character varying' ? col.udt_name : null;
     const timeStamp = col.data_type === 'timestamp with time zone' ? 'timestamp' : null;
@@ -59,15 +63,15 @@ function writeToDBML(columnsAndcolumnInfo, tableName, schemaName) {
   convertToDBML.push('}\n\n');
   const returnValue = convertToDBML.join('\n');
   o && console.log(`creating/adding to: ${schemaName}.dbml to your output path with the dbml definition of table ${tableName}.`)
-  o ? fs.appendFile(`${o || './'}${schemaName}.dbml`, returnValue, 'utf8', () => {}) : console.log(returnValue);
+  o ? fs.appendFile(fileName, returnValue, 'utf8', () => {}) : console.log(returnValue);
 }
 
-function tableColumnInfoQueryFunc(tableNameArr, schemaName) {
+function tableColumnInfoQueryFunc(tableNameArr, schemaName, fileName) {
   tableNameArr.forEach(tableName => {
     const query = tableColumnInfoQuery(tableName);
     dbClient.query(query, (err, res) => {
-      if (err) throw new Error(`${tableName}: ${err}`);
-      writeToDBML(res.rows, tableName, schemaName);
+      if (err) process.exit(`${tableName}: ${err}`);
+      writeToDBML(res.rows, tableName, schemaName, fileName);
     });
   });
 }
@@ -77,16 +81,22 @@ function tablesInSchemaFunc(schemaNameArr) {
     const schemaName = schema.nspname;
     const schemaNameQuery = tablesInSchemaQuery(schemaName);
     dbClient.query(schemaNameQuery, (err, res) => {
-      if (err) throw new Error(err);
+      if (err) process.exit(err);
       const tableNameArr = res.rows.map(row => row.tablename);
-      tableColumnInfoQueryFunc(tableNameArr, schemaName);
+      const fileName = `${o || './'}${schemaName}.dbml`
+      if(fs.existsSync(fileName, fs.constants.R_OK | fs.constants.W_OK)) {
+        console.log(fileName + " The file exists.");
+    } else {
+        console.log(fileName + ' The file does not exist.');
+    }
+      tableColumnInfoQueryFunc(tableNameArr, schemaName, fileName);
     });
   });
 }
 
 function schemaQueryFunc() {
   dbClient.query(schemasQuery, (err, res) => {
-    if (err) throw new Error(err);
+    if (err) process.exit(err);
     const schemasWeMightBeUsing = res.rows.filter(row => {
       let answer = true;
       if (row.nspname.includes('pg_')) {
@@ -102,9 +112,9 @@ function schemaQueryFunc() {
 
 function main() {
     schemaQueryFunc();
-    setTimeout(() => process.exit(), t || 5000)
+    setTimeout(() => process.exit(`Check your output path. Your db now has dbml definitions!`), t || 5000)
 }
 main();
-process.on('exit', () => {
-    return console.log(`Check your output path. Your db now has dbml definitions!`);
+process.on('exit', (code) => {
+    return console.log(code);
 })
