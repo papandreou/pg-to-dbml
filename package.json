@@ -1,5 +1,5 @@
 {
-  "name": "pg-to-dbml",
+  "name": "@polarislabs/pg-to-dbml",
   "version": "0.1.0",
   "description": "CLI tool to scan your postgres database, and output DBML.",
   "main": "index.js",
@@ -30,5 +30,8 @@
   "bugs": {
     "url": "https://github.com/polarislabs/pg-to-dbml/issues"
   },
-  "homepage": "https://github.com/polarislabs/pg-to-dbml#readme"
+  "homepage": "https://github.com/polarislabs/pg-to-dbml#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/polarislabs"
+  }
 }

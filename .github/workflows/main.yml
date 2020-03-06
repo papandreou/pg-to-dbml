@@ -1,0 +1,22 @@
+name: Publish to Github Packages
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Use Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '13.x'
+        registry-url: https://npm.pkg.github.com
+    - name: Install dependencies
+      run: npm install
+    - name: Publish to Github Packages
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
