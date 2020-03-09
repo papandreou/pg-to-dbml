@@ -1,6 +1,6 @@
 {
   "name": "@polarislabs/pg-to-dbml",
-  "version": "0.1.1",
+  "version": "0.1.7",
   "description": "CLI tool to scan your postgres database, and output DBML.",
   "main": "index.js",
   "scripts": {
@@ -15,23 +15,21 @@
   "author": "Jeff Bumgardner <jbumgardner@polarislabs.com>",
   "license": "ISC",
   "dependencies": {
-    "@polarislabs/eslint-config-polaris": "^1.1.5",
     "pg": "^7.18.2",
     "yargs": "^15.1.0"
   },
   "bin": {
     "pg-to-dbml": "index.js"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@polarislabs/eslint-config-polaris": "^1.1.5"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/polarislabs/pg-to-dbml.git"
   },
   "bugs": {
     "url": "https://github.com/polarislabs/pg-to-dbml/issues"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/polarislabs"
   },
   "homepage": "https://github.com/polarislabs/pg-to-dbml#readme"
 }
