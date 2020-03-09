@@ -22,23 +22,20 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '13.x'
-        registry-url: https://registry.npmjs.org
-    - run: npm install
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-    - run: npm publish --access public
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '13.x'
         registry-url: https://npm.pkg.github.com
         scope: '@polarislabs'
-    - name: Install dependencies
-      run: npm install
+    - run: npm install
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
     - name: Publish to Github Packages
       run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Use Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '13.x'
+        registry-url: https://registry.npmjs.org
+    - run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
