@@ -27,10 +27,12 @@ jobs:
     - run: npm install
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
-    - name: Publish to Github Packages
-      run: npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  publish-to-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Use Node
       uses: actions/setup-node@v1
       with:
@@ -39,3 +41,19 @@ jobs:
     - run: npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  publish-to-github:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Use Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '13.x'
+        registry-url: https://npm.pkg.github.com
+        scope: '@polarislabs'
+    - name: Publish to Github Packages
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
