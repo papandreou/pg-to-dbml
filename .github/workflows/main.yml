@@ -31,8 +31,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
     - name: Use Node
       uses: actions/setup-node@v1
       with:
@@ -45,8 +43,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
     - name: Use Node
       uses: actions/setup-node@v1
       with:
