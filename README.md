@@ -4,26 +4,23 @@
 CLI tool to scan your postgres database, and output DBML.
 - [pg-to-dbml](#pg-to-dbml)
     - [Description](#description)
-  - [Overview](#overview)
-    - [Resources](#resources)
-    - [Download](#download)
+    - [Tech Stack](#tech-stack)
+    - [Download and install](#download-and-install)
     - [How to use the cli](#how-to-use-the-cli)
     - [Example Usage](#example-usage)
   - [Linting](#linting)
+  - [Debugging](#debugging)
   - [Changelog](#changelog)
 
-## Overview
-
-The purpose of the reference application is to provide a starting point for Node.js development that encapsulates good tools and best practices such as TypeScript, configuration management, linting, testing, and documentation.
-
-### Resources
+### Tech Stack
 
 - [NodeJS](https://nodejs.org/en/docs/)
 - [Yargs](http://yargs.js.org/)
 - [PG](https://node-postgres.com/)
 
-### Download
-`npm i 
+### Download and install
+
+`npm imstall pg-to-dbml` 
 
 ### How to use the cli
 
@@ -42,12 +39,19 @@ Options:
   -t, --timeout            how long you want process to run before it exits
                            process.                              [default: 5000]
 ```
+
 ### Example Usage
 `pg-to-dbml --db=DB_NAME --c=postgresql://USER:PASSWORD@HOST:PORT -o='../'`
+
 ## Linting
 
 We are using ESLint to lint our code as we code and when we push our code. For configuring, see `.eslintrc.js` and `.prettierrc`.
 
+## Debugging
+
+Running in debug mode in VS Code is easy. Toggle the debugger to auto-attach, and then call from the integrated terminal:
+
+`node --inspect-brk --db=DB_NAME --c=postgresql://USER:PASSWORD@HOST:PORT -o='../'`
 
 ## Changelog
 
