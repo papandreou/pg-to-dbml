@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const { Client } = require('pg');
+const { EOL } = require('os');
 const fs = require('fs');
 const argv = require('yargs')
     .usage('Usage: $0 [options]')
@@ -15,7 +16,7 @@ const argv = require('yargs')
     .describe('db', 'database name you want to create dbml file(s) from.')
     .alias('t', 'timeout')
     .nargs('t', 1)
-    .describe('t', 'how long you want process to run before it exits process.')
+    .describe('t', 'how long you want process to run (in milliseconds) before it exits process.')
     .default('t', 5000)
     .demandOption(['c', 'db'])
     .argv
@@ -60,13 +61,13 @@ function writeToDBML(columnsAndcolumnInfo, tableName, schemaName, fileName) {
     return DBMLDefiniton;
   });
   convertToDBML.unshift(`Table ${tableName} {`);
-  convertToDBML.push('}\n\n');
-  const returnValue = convertToDBML.join('\n');
+  convertToDBML.push(`}${EOL}${EOL}`);
+  const returnValue = convertToDBML.join(`${EOL}`);
   o && console.log(`creating/adding to: ${schemaName}.dbml to your output path with the dbml definition of table ${tableName}.`)
   o ? fs.appendFile(fileName, returnValue, 'utf8', () => {}) : console.log(returnValue);
 }
 
-function tableColumnInfoQueryFunc(tableNameArr, schemaName, fileName) {
+function getTableColumnInfo(tableNameArr, schemaName, fileName) {
   tableNameArr.forEach(tableName => {
     const query = tableColumnInfoQuery(tableName);
     dbClient.query(query, (err, res) => {
@@ -76,7 +77,7 @@ function tableColumnInfoQueryFunc(tableNameArr, schemaName, fileName) {
   });
 }
 
-function tablesInSchemaFunc(schemaNameArr) {
+function getTablesInSchema(schemaNameArr) {
   schemaNameArr.forEach(schema => {
     const schemaName = schema.nspname;
     const schemaNameQuery = tablesInSchemaQuery(schemaName);
@@ -87,12 +88,12 @@ function tablesInSchemaFunc(schemaNameArr) {
       if(fs.existsSync(fileName, fs.constants.R_OK | fs.constants.W_OK)) {
         fs.writeFileSync(fileName, '', ()=> {});
       }
-      tableColumnInfoQueryFunc(tableNameArr, schemaName, fileName);
+      getTableColumnInfo(tableNameArr, schemaName, fileName);
     });
   });
 }
 
-function schemaQueryFunc() {
+function getSchemas() {
   dbClient.query(schemasQuery, (err, res) => {
     if (err) process.exit(err);
     const schemasWeMightBeUsing = res.rows.filter(row => {
@@ -104,15 +105,15 @@ function schemaQueryFunc() {
       }
       return answer;
     });
-    tablesInSchemaFunc(schemasWeMightBeUsing);
+    getTablesInSchema(schemasWeMightBeUsing);
   });
 }
 
 function main() {
-    schemaQueryFunc();
-    setTimeout(() => process.exit(`Check your output path. Your db now has dbml definitions!`), t || 5000)
+  getSchemas();
+  setTimeout(() => process.exit(`Check your output path. Your db now has dbml definitions!`), t || 5000)
 }
 main();
 process.on('exit', (code) => {
-    return console.log(code);
+  return console.log(code);
 })
