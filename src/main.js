@@ -1,12 +1,13 @@
 
-const { EOL } = require('os');
+const db = require('./db');
 
-const initializeDb = require('./dbInit');
 const getSchemas = require('./queries/getSchemas');
+const getTablesInSchema = require('./queries/getTablesInSchema');
+const getTableStructure = require('./queries/getTableStructure');
 
-var dbClient;
-
-const fs = require('fs');
+const transformToDbml = require('./transformToDbml');
+const createFile = require('./utils/createFile');
+const writeToFile = require('./utils/writeToFile');
 
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
@@ -28,84 +29,71 @@ const argv = require('yargs')
   .demandOption(['c', 'db'])
   .argv;
 
-const { c: connectionString, db: databaseName, o: outputDir, t: timeout } = argv;
+const { c: dbConnectionString, db: dbName, o: outputDir, t: timeout } = argv;
 
-// TODO: check that output dir exists, create if not
+/*
 
-const dbConnectionString = `${connectionString}/${databaseName}`;
+TODO: check if output dir exists... 
+TODO: add timeout back...
+TODO; improve error handling... just a bit
+TODO: add option for logging, e.g. how verbose
 
-const tablesInSchemaQuery = schemaName =>
-  `select tablename from pg_tables where schemaname='${schemaName}'`;
-const tableColumnInfoQuery = tableName => `select cols.column_name, cols.column_default, cols.is_nullable, cols.data_type, cols.udt_name, cols.character_maximum_length, cols.datetime_precision,
-(select MAX(pg_catalog.col_description(oid,cols.ordinal_position::int)) from pg_catalog.pg_class c where c.relname=cols.table_name) as column_comment
-from information_schema.columns cols
-where cols.table_catalog='${databaseName}' and cols.table_name='${tableName}'`;
-
-function writeToDBML(columnsAndcolumnInfo, tableName, schemaName, fileName) {
-  const convertToDBML = columnsAndcolumnInfo.map(col => {
-    const characterVarying = col.data_type === 'character varying' ? col.udt_name : null;
-    const timeStamp = col.data_type === 'timestamp with time zone' ? 'timestamp' : null;
-    const dataType = characterVarying || timeStamp || col.data_type;
-    const characterMaxLength = col.character_maximum_length
-      ? `(${col.character_maximum_length}) `
-      : ' ';
-    const nullable = col.is_nullable ? '' : 'not null, ';
-    const cleanUpColumnDefault = col.column_default && col.column_default.includes('::text')
-      ? col.column_default.replace(/::text/gi, '').replace(/'/gi, '')
-      : col.column_default;
-    const columnDefault = cleanUpColumnDefault
-      ? `default:'${cleanUpColumnDefault}'${nullable ? ', ' : ''}`
-      : '';
-    const note = col.column_comment ? `note:'${col.column_comment}'` : '';
-    const squareBrackets =
-      nullable || columnDefault || note ? `[${nullablre}${columnDefault}${note}]` : '';
-    const DBMLDefiniton = `\t${col.column_name} ${dataType}${characterMaxLength}${squareBrackets}`;
-    return DBMLDefiniton;
-  });
-  convertToDBML.unshift(`Table ${tableName} {`);
-  convertToDBML.push(`}${EOL}${EOL}`);
-  const returnValue = convertToDBML.join(`${EOL}`);
-  outputDir && console.log(`creating/adding to: ${schemaName}.dbml to your output path with the dbml definition of table ${tableName}.`)
-  outputDir ? fs.appendFile(fileName, returnValue, 'utf8', () => { }) : console.log(returnValue);
-}
-
-function getTableColumnInfo(tableNameArr, schemaName, fileName) {
-  tableNameArr.forEach(tableName => {
-    const query = tableColumnInfoQuery(tableName);
-    dbClient.query(query, (err, res) => {
-      if (err) process.exit(`${tableName}: ${err}`);
-      writeToDBML(res.rows, tableName, schemaName, fileName);
-    });
-  });
-}
-
-function getTablesInSchema(schemaNameArr) {
-  schemaNameArr.forEach(schema => {
-    const schemaName = schema.nspname;
-    const schemaNameQuery = tablesInSchemaQuery(schemaName);
-    dbClient.query(schemaNameQuery, (err, res) => {
-      if (err) process.exit(err);
-      const tableNameArr = res.rows.map(row => row.tablename);
-      const fileName = `${outputDir || './'}${schemaName}.dbml`
-      if (fs.existsSync(fileName, fs.constants.R_OK | fs.constants.W_OK)) {
-        fs.writeFileSync(fileName, '', () => { });
-      }
-      getTableColumnInfo(tableNameArr, schemaName, fileName);
-    });
-  });
-}
-
+*/
 
 async function main() {
   try {
-    dbClient = await initializeDb(dbConnectionString);
-    const schemasInUse = await getSchemas(dbClient);
-    getTablesInSchema(schemasInUse);
+    await db.initialize({ dbConnectionString, dbName });
+    const schemasInUse = await getSchemas();
+    console.dir(schemasInUse);
+
+    const getTablesPromises = schemasInUse.map(async schema => {
+      console.log(`found schema "${schema}"`);
+      const tables = await getTablesInSchema(schema);
+      return {
+        schema,
+        tables
+      };
+    });
+
+    const results = await Promise.all(getTablesPromises);
+
+    const allPromises = results.map(async ({ schema, tables }) => {
+      const allStructuresPromises = tables.map(async tableName => {
+        const structure = await getTableStructure(tableName);
+        return {
+          tableName,
+          structure
+        };
+      });
+
+      console.log(`getting structure of schema "${schema}"`);
+      const allstructures = await Promise.all(allStructuresPromises);
+      return {
+        schema,
+        tables: allstructures
+      }
+    });
+
+    const allResults = await Promise.all(allPromises);
+    allResults.forEach(({ schema, tables }) => {
+      if (schema !== 'polaris') {
+        return;
+      }
+      const dir = outputDir || './';
+      const fileName = `${dir}/${schema}.dbml`
+      console.log(`output for ${schema} to ${fileName}`);
+      createFile(fileName);
+      tables.forEach(({ tableName, structure }) => {
+        const dbml = transformToDbml(tableName, structure);
+        writeToFile(fileName, dbml);
+      })
+    })
+
+    process.exit(0);
   } catch (err) {
     console.error(err);
     process.exit(1);
   }
-  setTimeout(() => process.exit(`Check your output path. Your db now has dbml definitions!`), timeout || 5000)
 }
 
 main();
