@@ -1,16 +1,10 @@
 
 const db = require('./db');
 
-const getSchemas = require('./queries/getSchemas');
-const getTablesInSchema = require('./queries/getTablesInSchema');
-const getTableStructure = require('./queries/getTableStructure');
-
-const transformToDbml = require('./transformToDbml');
-const createFile = require('./utils/createFile');
-const writeToFile = require('./utils/writeToFile');
+const getDbStructure = require('./funcs/getDbStructure');
+const writeResults = require('./funcs/writeResults');
 
 const argv = require('yargs')
-  .usage('Usage: $0 [options]')
   .usage('Usage: $0 [options]')
   .alias('o', 'output_path')
   .nargs('o', 1)
@@ -29,66 +23,24 @@ const argv = require('yargs')
   .demandOption(['c', 'db'])
   .argv;
 
-const { c: dbConnectionString, db: dbName, o: outputDir, t: timeout } = argv;
-
 /*
 
-TODO: check if output dir exists... 
+TODO: check if output dir exists... and create if not?
 TODO: add timeout back...
-TODO; improve error handling... just a bit
+TODO; improve error handling...
 TODO: add option for logging, e.g. how verbose
+TODO: add github actions for test / lint
+TODO: add badge status to README
 
 */
 
 async function main() {
+  const { c: dbConnectionString, db: dbName } = argv;
+
   try {
     await db.initialize({ dbConnectionString, dbName });
-    const schemasInUse = await getSchemas();
-    console.dir(schemasInUse);
-
-    const getTablesPromises = schemasInUse.map(async schema => {
-      console.log(`found schema "${schema}"`);
-      const tables = await getTablesInSchema(schema);
-      return {
-        schema,
-        tables
-      };
-    });
-
-    const results = await Promise.all(getTablesPromises);
-
-    const allPromises = results.map(async ({ schema, tables }) => {
-      const allStructuresPromises = tables.map(async tableName => {
-        const structure = await getTableStructure(tableName);
-        return {
-          tableName,
-          structure
-        };
-      });
-
-      console.log(`getting structure of schema "${schema}"`);
-      const allstructures = await Promise.all(allStructuresPromises);
-      return {
-        schema,
-        tables: allstructures
-      }
-    });
-
-    const allResults = await Promise.all(allPromises);
-    allResults.forEach(({ schema, tables }) => {
-      if (schema !== 'polaris') {
-        return;
-      }
-      const dir = outputDir || './';
-      const fileName = `${dir}/${schema}.dbml`
-      console.log(`output for ${schema} to ${fileName}`);
-      createFile(fileName);
-      tables.forEach(({ tableName, structure }) => {
-        const dbml = transformToDbml(tableName, structure);
-        writeToFile(fileName, dbml);
-      })
-    })
-
+    const dbStructure = await getDbStructure();
+    writeResults(dbStructure);
     process.exit(0);
   } catch (err) {
     console.error(err);
@@ -99,5 +51,9 @@ async function main() {
 main();
 
 process.on('exit', (code) => {
-  return console.log(code);
+  if (code === 0) {
+    console.log('processed executed successfully.')
+  } else {
+    console.log('processed exited unsuccessfully...')
+  }
 })

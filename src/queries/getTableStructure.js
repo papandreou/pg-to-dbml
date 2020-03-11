@@ -11,19 +11,9 @@ const tableColumnInfoQuery = (dbName, tableName) => `select cols.column_name,
   from information_schema.columns cols
   where cols.table_catalog='${dbName}' and cols.table_name='${tableName}'`;
 
-// function getTableColumnInfo(tableNameArr, schemaName, fileName) {
-//   tableNameArr.forEach(tableName => {
-//     const query = tableColumnInfoQuery(tableName);
-//     dbClient.query(query, (err, res) => {
-//       if (err) process.exit(`${tableName}: ${err}`);
-//       writeToDBML(res.rows, tableName, schemaName, fileName);
-//     });
-//   });
-// }
-
 module.exports = async function getTableStructure(tableName) {
   const query = tableColumnInfoQuery(db.dbName, tableName);
-  console.log(`query: ${query}`)
+  // console.log(`query: ${query}`)
   const res = await db.client.query(query);
   return res.rows;
 }
