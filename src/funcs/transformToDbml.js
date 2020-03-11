@@ -1,5 +1,7 @@
 const { EOL } = require('os');
 
+// TODO: possible to use https://www.dbml.org/js-module/#api for the transform to dbml?
+
 const getDataType = ({ data_type, udt_name }) => {
   const characterVarying = data_type === 'character varying' ? udt_name : null;
   const timeStamp = data_type === 'timestamp with time zone' ? 'timestamp' : null;

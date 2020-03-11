@@ -1,0 +1,240 @@
+Table attachment_aud {
+}
+
+Table clientversion_aud {
+}
+
+Table person_aud {
+}
+
+Table restservicepermission_aud {
+}
+
+Table billingconfiguration_aud {
+}
+
+Table sample_aud {
+}
+
+Table userregistration_aud {
+}
+
+Table maintenancerecord_aud {
+}
+
+Table storeexport_aud {
+}
+
+Table asset_aud {
+}
+
+Table application_aud {
+}
+
+Table accountmaskpermission_aud {
+}
+
+Table host_aud {
+}
+
+Table dataanalyst_aud {
+}
+
+Table componenttype_aud {
+}
+
+Table fluid_aud {
+}
+
+Table flag_aud {
+}
+
+Table fluidstandard_aud {
+}
+
+Table persistentreportcontextfilter_aud {
+}
+
+Table manufacturer_aud {
+}
+
+Table samplecomment_aud {
+}
+
+Table subscriptioncarboncopy_aud {
+}
+
+Table accountmaskrestriction_aud {
+}
+
+Table address_aud {
+}
+
+Table commentreason_aud {
+}
+
+Table component_aud {
+}
+
+Table horizonnews_aud {
+}
+
+Table componentmodel_aud {
+}
+
+Table ferrographyimageresult_aud {
+}
+
+Table commentcodereasons_aud {
+}
+
+Table subscription_aud {
+}
+
+Table subscriptionseverities_aud {
+}
+
+Table viewedsamples_aud {
+}
+
+Table persistentreportcontextproperty_aud {
+}
+
+Table persistentreportcontextsort_aud {
+}
+
+Table personbyaccountmask_aud {
+}
+
+Table mailreportbatchentry_aud {
+}
+
+Table profileproperty_aud {
+}
+
+Table mailreportbatch_aud {
+}
+
+Table authority_aud {
+}
+
+Table barcodeaccountexemption_aud {
+}
+
+Table commentcategory_aud {
+}
+
+Table iso_unit_reference_aud {
+}
+
+Table laboratory_aud {
+}
+
+Table commentcode_aud {
+}
+
+Table account_aud {
+}
+
+Table samplenotification_aud {
+}
+
+Table postedmessage_aud {
+}
+
+Table stagedata_aud {
+}
+
+Table testkittype_aud {
+}
+
+Table accountmask_aud {
+}
+
+Table barcode_aud {
+}
+
+Table accounttier_aud {
+}
+
+Table ferrography_aud {
+}
+
+Table filtertype_aud {
+}
+
+Table device_aud {
+}
+
+Table samplehold_aud {
+}
+
+Table samplesubmission_aud {
+}
+
+Table translation_aud {
+}
+
+Table persistentreportcontextrecipient_aud {
+}
+
+Table phone_aud {
+}
+
+Table photomicrograph_aud {
+}
+
+Table samplereportapprovalauthority_aud {
+}
+
+Table privatelabel_aud {
+}
+
+Table printedlabeldata_aud {
+}
+
+Table subscriptionfilter_aud {
+}
+
+Table authorityoverride_aud {
+}
+
+Table programcontact_aud {
+}
+
+Table program_aud {
+}
+
+Table shockpulsemethod_aud {
+}
+
+Table filter_aud {
+}
+
+Table advertisement_aud {
+}
+
+Table temp_samplesubmission_testkit_relations_aud {
+}
+
+Table subscriptionreporttypes_aud {
+}
+
+Table testkit_aud {
+}
+
+Table testcode_aud {
+}
+
+Table testmethod_aud {
+}
+
+Table testresultlimit_aud {
+}
+
+Table logo_aud {
+}
+
+Table persistentreportcontext_aud {
+}
+
