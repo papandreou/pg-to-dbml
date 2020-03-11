@@ -1,9 +1,0 @@
-Table EJB__TIMER__TBL {
-}
-
-Table databasechangelog {
-}
-
-Table databasechangeloglock {
-}
-
