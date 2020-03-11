@@ -22,7 +22,7 @@
     "pg-to-dbml": "index.js"
   },
   "devDependencies": {
-    "@polarislabs/eslint-config-polaris": "^1.1.5"
+    "eslint": "^6.8.0"
   },
   "repository": {
     "type": "git",
