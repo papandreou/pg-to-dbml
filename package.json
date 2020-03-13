@@ -4,7 +4,7 @@
   "description": "CLI tool to scan your postgres database, and output DBML.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo $DB_NAME\"d"
   },
   "keywords": [
     "dbml",
@@ -15,6 +15,7 @@
   "author": "Jeff Bumgardner <jbumgardner@polarislabs.com>",
   "license": "ISC",
   "dependencies": {
+    "p-map": "^4.0.0",
     "pg": "^7.18.2",
     "yargs": "^15.1.0"
   },
@@ -22,7 +23,7 @@
     "pg-to-dbml": "index.js"
   },
   "devDependencies": {
-    "@polarislabs/eslint-config-polaris": "^1.1.5"
+    "eslint": "^6.8.0"
   },
   "repository": {
     "type": "git",
