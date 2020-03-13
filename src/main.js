@@ -23,17 +23,6 @@ const argv = require('yargs')
   .demandOption(['c', 'db'])
   .argv;
 
-/*
-
-TODO: check if output dir exists... and create if not?
-TODO: add timeout back...
-TODO; improve error handling...
-TODO: add option for logging, e.g. how verbose
-TODO: add github actions for test / lint
-TODO: add badge status to README
-
-*/
-
 async function main() {
   const { c: dbConnectionString, db: dbName } = argv;
 
@@ -52,8 +41,8 @@ main();
 
 process.on('exit', (code) => {
   if (code === 0) {
-    console.log('processed executed successfully.')
+    console.log('process executed successfully.')
   } else {
-    console.log('processed exited unsuccessfully...')
+    console.log('process exited unsuccessfully...')
   }
 })

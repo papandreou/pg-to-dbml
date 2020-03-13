@@ -21,10 +21,7 @@ const getTableStructure = require('../queries/getTableStructure');
  */
 module.exports = async function getDbStructure() {
   const schemasInUse = await getSchemas();
-  //console.dir(schemasInUse);
 
-  // TODO: switch out Promise.all() for package `p-map` ? 
-  // should be faster, allows for concurrency
   const getAllTables = schemasInUse.map(async schema => {
     console.log(`found schema "${schema}"`);
     const tables = await getTablesInSchema(schema);
@@ -46,10 +43,10 @@ module.exports = async function getDbStructure() {
     });
 
     console.log(`getting structure of schema "${schema}"`);
-    const allstructures = await Promise.all(getAllTableColumns);
+    const allTableStructures = await Promise.all(getAllTableColumns);
     return {
       schema,
-      tables: allstructures
+      tables: allTableStructures
     }
   });
 

@@ -3,7 +3,6 @@ const db = require('../db')
 
 const schemasQuery = `select nspname from pg_catalog.pg_namespace;`;
 
-//TODO: add simple documentation to each func...
 /**
  * @function getSchemas
  * @returns {array[string]} of schema names

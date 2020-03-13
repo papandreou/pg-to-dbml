@@ -1,6 +1,6 @@
 const { EOL } = require('os');
 
-// TODO: possible to use https://www.dbml.org/js-module/#api for the transform to dbml?
+// NOTE: possible to use https://www.dbml.org/js-module/#api for the transform to dbml?
 
 const getDataType = ({ data_type, udt_name }) => {
   const characterVarying = data_type === 'character varying' ? udt_name : null;
@@ -14,7 +14,6 @@ module.exports = function writeToDBML(tableName, tableColumnDefinitions) {
   const dbmlColumnDefinitions = columns.map(col => {
     const dataType = getDataType(col);
 
-    // TODO: abstract parsing to very short fns above
     const characterMaxLength = col.character_maximum_length
       ? `(${col.character_maximum_length}) `
       : ' ';
