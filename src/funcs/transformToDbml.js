@@ -62,9 +62,9 @@ const getColumnDefinition = (col) => {
   return `\t"${columnName}" ${dataType} ${characterMaxLength} ${columnSettings} `;
 }
 
-module.exports = function writeToDBML(tableName, tableColumnDefinitions) {
-  const columns = tableColumnDefinitions && Array.isArray(tableColumnDefinitions) ? tableColumnDefinitions : [];
-  const columnDefinitions = columns.map(getColumnDefinition);
+module.exports = function writeToDBML({ tableName, primaryKeys, structure: colDefs }) {
+  const columns = colDefs && Array.isArray(colDefs) ? colDefs : [];
+  const columnDefinitions = columns.map(column => getColumnDefinition(column, primaryKeys));
   columnDefinitions.unshift(`Table "${tableName}" {`);
   columnDefinitions.push(`} ${EOL} ${EOL} `);
   return columnDefinitions.join(`${EOL} `);
