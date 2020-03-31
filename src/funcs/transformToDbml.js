@@ -1,37 +1,71 @@
 const { EOL } = require('os');
 
 // NOTE: possible to use https://www.dbml.org/js-module/#api for the transform to dbml?
+const getColumnType = (col) => {
+  const { data_type: dataType } = col;
+  let columnType;
+  switch (dataType) {
+    case 'character varying':
+      columnType = 'varchar';
+      break;
+    case 'timestamp':
+    case 'timestamp with time zone':
+    case 'timestamp without time zone':
+      columnType = 'timestamp';
+      break;
+    default:
+      columnType = dataType;
+  }
+  return columnType;
+}
 
-const getDataType = ({ data_type, udt_name }) => {
-  const characterVarying = data_type === 'character varying' ? udt_name : null;
-  const timeStamp = data_type === 'timestamp with time zone' ? 'timestamp' : null;
-  return characterVarying || timeStamp || data_type;
+// NOTE: see https://www.dbml.org/docs/#project-definition
+const getColumnSettings = (col) => {
+  const {
+    column_comment: columnComment,
+    column_default: columnDefault,
+    is_nullable: isNullable
+  } = col;
+
+  const columnSettings = [];
+
+  const cleanUpColumnDefault = columnDefault && columnDefault.includes('::text')
+    ? columnDefault.replace(/::text/gi, '').replace(/'/gi, '')
+    : columnDefault;
+
+  const defaultSetting = cleanUpColumnDefault
+    && `default:'${cleanUpColumnDefault}'`;
+  if (defaultSetting) columnSettings.unshift(defaultSetting);
+
+  const note = columnComment && `note:'${columnComment}'`;
+  if (note) columnSettings.unshift(note);
+
+  const notNullSetting = !isNullable && 'not null';
+  if (notNullSetting) columnSettings.unshift(notNullSetting);
+
+  return columnSettings.length > 0 ? `[${columnSettings.join(', ')}]` : '';
+}
+
+const getColumnDefinition = (col) => {
+  const {
+    character_maximum_length: charMaxLength,
+    column_name: columnName
+  } = col;
+
+  const dataType = getColumnType(col);
+
+  const characterMaxLength = charMaxLength
+    ? `(${charMaxLength})`
+    : ' ';
+  const columnSettings = getColumnSettings(col);
+
+  return `\t"${columnName}" ${dataType} ${characterMaxLength} ${columnSettings} `;
 }
 
 module.exports = function writeToDBML(tableName, tableColumnDefinitions) {
-
   const columns = tableColumnDefinitions && Array.isArray(tableColumnDefinitions) ? tableColumnDefinitions : [];
-  const dbmlColumnDefinitions = columns.map(col => {
-    const dataType = getDataType(col);
-
-    const characterMaxLength = col.character_maximum_length
-      ? `(${col.character_maximum_length}) `
-      : ' ';
-    const nullable = col.is_nullable ? '' : 'not null, ';
-    const cleanUpColumnDefault = col.column_default && col.column_default.includes('::text')
-      ? col.column_default.replace(/::text/gi, '').replace(/'/gi, '')
-      : col.column_default;
-    const columnDefault = cleanUpColumnDefault
-      ? `default:'${cleanUpColumnDefault}'${nullable ? ', ' : ''}`
-      : '';
-    const note = col.column_comment ? `note:'${col.column_comment}'` : '';
-    const squareBrackets =
-      nullable || columnDefault || note ? `[${nullable}${columnDefault}${note}]` : '';
-
-    return `\t${col.column_name} ${dataType}${characterMaxLength}${squareBrackets}`;
-  });
-
-  dbmlColumnDefinitions.unshift(`Table ${tableName} {`);
-  dbmlColumnDefinitions.push(`}${EOL}${EOL}`);
-  return dbmlColumnDefinitions.join(`${EOL}`);
+  const columnDefinitions = columns.map(getColumnDefinition);
+  columnDefinitions.unshift(`Table "${tableName}" {`);
+  columnDefinitions.push(`} ${EOL} ${EOL} `);
+  return columnDefinitions.join(`${EOL} `);
 }

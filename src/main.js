@@ -20,7 +20,16 @@ function builder(myYargs) {
         alias: 's',
         describe: 'database schema name you want to create dbml file(s) from.'
       },
-
+      'skip_schemas': {
+        alias: 'S',
+        coerce: arg => arg.split(','),
+        describe: 'comma delimited string of schema names or Postgres regexes, e.g. inventory,temp_%'
+      },
+      'skip_tables': {
+        alias: 'T',
+        coerce: arg => arg.split(','),
+        describe: 'comma delimited string of table names or Postgres regexes to skip, e.g. lookup_%,temporary'
+      },
       'o': {
         default: './',
         describe: 'where you want the dbml files to be outputted.'

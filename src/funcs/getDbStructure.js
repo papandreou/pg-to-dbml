@@ -19,21 +19,24 @@ const getTableStructure = require('../queries/getTableStructure');
  *   }
  * ]
  */
-module.exports = async function getDbStructure() {
-  const schemasInUse = await getSchemas();
+module.exports = async function getDbStructure(schemaName, skipSchemas, skipTables) {
+  if (skipSchemas && skipSchemas.length > 0) console.log(`will skip schemas ${skipSchemas.join(', ')}`);
+  const schemasInUse = await getSchemas(schemaName, skipSchemas);
+
+  if (!schemasInUse || schemasInUse.length === 0) return undefined;
 
   const getAllTables = schemasInUse.map(async schema => {
     console.log(`found schema "${schema}"`);
-    const tables = await getTablesInSchema(schema);
+    const tables = await getTablesInSchema(schema, skipTables);
     return {
       schema,
       tables
     };
   });
 
-  const results = await Promise.all(getAllTables);
+  const allTables = await Promise.all(getAllTables);
 
-  const getAllColumnDefs = results.map(async ({ schema, tables }) => {
+  const getAllColumnDefs = allTables.map(async ({ schema, tables }) => {
     const getAllTableColumns = tables.map(async tableName => {
       const structure = await getTableStructure(tableName);
       return {

@@ -11,6 +11,7 @@ module.exports = allResults => {
     const dir = outputDir || './';
     const fileName = `${dir}/${schema}.dbml`
     createFile(fileName);
+    console.log(`dumping schema ${schema} structure to ${fileName}`);
     tables.forEach(({ tableName, structure }) => {
       const dbml = transformToDbml(tableName, structure);
       writeToFile(fileName, dbml);
