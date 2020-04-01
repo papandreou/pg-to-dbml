@@ -9,29 +9,31 @@ const systemSchemas = [
   'information%'
 ];
 
-const getWhereClause = (schemaName, skipSchemas) => {
-  if (schemaName) {
-    return `WHERE pn.nspname = '${schemaName}'`;
-  }
+const getWhereClause = (includeSchemas, skipSchemas) => {
+
+  const includeSchemaConditions = includeSchemas.reduce((acc, skipThisSchema, idx, arr) => {
+    const addAnd = (idx === (arr.length - 1)) ? '' : 'OR';
+    return `${acc}pn.nspname LIKE '${skipThisSchema}' ${addAnd} `;
+  }, '');
 
   const schemasToSkip = [
     ...(skipSchemas ? skipSchemas : []),
     ...systemSchemas
   ];
-  const whereConditions = schemasToSkip.reduce((acc, skipThisSchema, idx, arr) => {
+  const excludeSchemaConditions = schemasToSkip.reduce((acc, skipThisSchema, idx, arr) => {
     const addAnd = (idx === (arr.length - 1)) ? '' : 'AND';
     return `${acc}pn.nspname NOT LIKE '${skipThisSchema}' ${addAnd} `;
   }, '');
 
-  return `WHERE ${whereConditions}`;
+  return `WHERE (${includeSchemaConditions}) ${includeSchemaConditions && excludeSchemaConditions && 'AND'} (${excludeSchemaConditions})`;
 };
 
 /**
  * @function getSchemas
  * @returns {array[string]} of schema names
  */
-module.exports = async function getSchemas(schemaName, skipSchemas) {
-  const whereClause = getWhereClause(schemaName, skipSchemas);
+module.exports = async function getSchemas(includeSchemas, skipSchemas) {
+  const whereClause = getWhereClause(includeSchemas, skipSchemas);
   const schemasQuery = `${baseQuery} ${whereClause};`;
 
   console.log(`schemas query: ${schemasQuery}`);

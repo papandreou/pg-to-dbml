@@ -27,8 +27,15 @@ const cleanUpColumnDefault = columnDefault => columnDefault && columnDefault.inc
 const getColumnDefault = (columnDefault, dataType) => {
   if (!columnDefault) return '';
   const cleanedUp = cleanUpColumnDefault(columnDefault);
-  const useQuotes = ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
-  return useQuotes ? `default: '${cleanedUp}'` : `default: ${cleanedUp}`;
+  const isFuncRegEx = /\(/;
+  const isFunc = isFuncRegEx.test(cleanedUp);
+
+  if (isFunc) {
+    return `default: \`${cleanedUp}\``;
+  } else {
+    const useQuotes = ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
+    return useQuotes ? `default: '${cleanedUp}'` : `default: ${cleanedUp}`;
+  }
 }
 
 
@@ -73,10 +80,11 @@ const getColumnDefinition = (col) => {
   return `\t"${columnName}" ${dataType}${characterMaxLength} ${columnSettings} `;
 }
 
-module.exports = function transformTableStructureToDBML({ tableName, primaryKeys, structure: colDefs }) {
+module.exports = function transformTableStructureToDBML({ tableName, primaryKeys, structure: colDefs }, schemaName, includeSchemaName) {
   const columns = colDefs && Array.isArray(colDefs) ? colDefs : [];
   const columnDefinitions = columns.map(column => getColumnDefinition(column, primaryKeys));
-  columnDefinitions.unshift(`Table "${tableName}" {`);
+  const tableNameString = includeSchemaName ? `${schemaName}.${tableName}` : tableName;
+  columnDefinitions.unshift(`Table "${tableNameString}" {`);
   columnDefinitions.push(`} ${EOL} ${EOL} `);
   return columnDefinitions.join(`${EOL} `);
 }

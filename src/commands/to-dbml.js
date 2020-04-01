@@ -1,19 +1,19 @@
 'use strict';
 
 const db = require('../db');
-const getDbStructure = require('../funcs/getDbStructure');
+const getDbSchemaStructures = require('../funcs/getDbSchemaStructures');
 const writeResults = require('../funcs/writeResults');
 
 async function toDbml(argv) {
-  const { c: dbConnectionString, db: dbName, s: schemaName, S: skipSchemas, T: skipTables } = argv;
+  const { c: dbConnectionString, db: dbName } = argv;
 
   try {
     await db.initialize({ dbConnectionString, dbName });
-    const dbStructure = await getDbStructure(schemaName, skipSchemas, skipTables);
-    if (!dbStructure) {
+    const schemaStructures = await getDbSchemaStructures(argv);
+    if (!schemaStructures) {
       console.log('no schemas found!');
     } else {
-      writeResults(dbStructure);
+      writeResults(schemaStructures);
     }
     console.log(`to-dbml finished.`);
     process.exit(0);

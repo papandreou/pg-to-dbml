@@ -16,23 +16,30 @@ function builder(myYargs) {
         demandOption: true,
         describe: 'database name you want to create dbml file(s) from.'
       },
-      'schema_name': {
-        alias: 's',
-        describe: 'database schema name you want to create dbml file(s) from.'
-      },
-      'skip_schemas': {
+      'exclude_schemas': {
         alias: 'S',
-        coerce: arg => arg.split(','),
-        describe: 'comma delimited string of schema names or Postgres regexes, e.g. inventory,temp_%'
+        describe: 'schema names or Postgres regexes, e.g. inventory temp_%',
+        type: 'array'
       },
-      'skip_tables': {
+      'exclude_tables': {
         alias: 'T',
-        coerce: arg => arg.split(','),
-        describe: 'comma delimited string of table names or Postgres regexes to skip, e.g. lookup_%,temporary'
+        describe: 'table names or Postgres regexes to skip, e.g. lookup_% temporary',
+        type: 'array'
+      },
+      'include_schemas': {
+        alias: 's',
+        describe: 'database schema names you want to create dbml file(s) from.',
+        type: 'array'
       },
       'o': {
         default: './',
-        describe: 'where you want the dbml files to be outputted.'
+        describe: 'output dir for the resulting dbml file(s).'
+      },
+      'sep': {
+        alias: 'separate_dbml_by_schema',
+        default: false,
+        describe: 'If present, will output dbml to separate files based on schema name, e.g. schema.dbml',
+        type: 'boolean'
       }
     })
     .nargs('t', 1)
