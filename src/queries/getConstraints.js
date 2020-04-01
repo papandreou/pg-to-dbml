@@ -14,7 +14,7 @@ const getQuery = schemaName => `
 
 const getConstraintType = constraintDefinition => {
   if (constraintDefinition.startsWith('PRIMARY KEY')) return 'PRIMARY KEY';
-  if (constraintDefinition.startsWith('FORIEGN KEY')) return 'FOREIGN KEY';
+  if (constraintDefinition.startsWith('FOREIGN KEY')) return 'FOREIGN KEY';
   if (constraintDefinition.startsWith('UNIQUE')) return 'UNIQUE';
 };
 

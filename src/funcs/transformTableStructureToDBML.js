@@ -6,6 +6,7 @@ const getColumnType = (col) => {
   let columnType;
   switch (dataType) {
     case 'character varying':
+    case 'varchar':
       columnType = 'varchar';
       break;
     case 'timestamp':
@@ -19,29 +20,42 @@ const getColumnType = (col) => {
   return columnType;
 }
 
+const cleanUpColumnDefault = columnDefault => columnDefault && columnDefault.includes('::text')
+  ? columnDefault.replace(/::text/gi, '').replace(/'/gi, '')
+  : columnDefault;
+
+const getColumnDefault = (columnDefault, dataType) => {
+  if (!columnDefault) return '';
+  const cleanedUp = cleanUpColumnDefault(columnDefault);
+  const useQuotes = ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
+  return useQuotes ? `default: '${cleanedUp}'` : `default: ${cleanedUp}`;
+}
+
+
 // NOTE: see https://www.dbml.org/docs/#project-definition
 const getColumnSettings = (col) => {
   const {
     column_comment: columnComment,
     column_default: columnDefault,
-    is_nullable: isNullable
+    is_nullable: isNullable,
+    dataType,
+    isPrimary
   } = col;
 
   const columnSettings = [];
 
-  const cleanUpColumnDefault = columnDefault && columnDefault.includes('::text')
-    ? columnDefault.replace(/::text/gi, '').replace(/'/gi, '')
-    : columnDefault;
+  const primaryKeySetting = isPrimary && `primary key`;
+  if (primaryKeySetting) columnSettings.unshift(primaryKeySetting);
 
-  const defaultSetting = cleanUpColumnDefault
-    && `default:'${cleanUpColumnDefault}'`;
+  const defaultSetting = getColumnDefault(columnDefault, dataType);
   if (defaultSetting) columnSettings.unshift(defaultSetting);
+
+  const notNullSetting = !isNullable && 'not null';
+  if (notNullSetting) columnSettings.unshift(notNullSetting);
 
   const note = columnComment && `note:'${columnComment}'`;
   if (note) columnSettings.unshift(note);
 
-  const notNullSetting = !isNullable && 'not null';
-  if (notNullSetting) columnSettings.unshift(notNullSetting);
 
   return columnSettings.length > 0 ? `[${columnSettings.join(', ')}]` : '';
 }
@@ -53,16 +67,13 @@ const getColumnDefinition = (col) => {
   } = col;
 
   const dataType = getColumnType(col);
+  const characterMaxLength = charMaxLength ? `(${charMaxLength})` : ' ';
+  const columnSettings = getColumnSettings({ ...col, dataType });
 
-  const characterMaxLength = charMaxLength
-    ? `(${charMaxLength})`
-    : ' ';
-  const columnSettings = getColumnSettings(col);
-
-  return `\t"${columnName}" ${dataType} ${characterMaxLength} ${columnSettings} `;
+  return `\t"${columnName}" ${dataType}${characterMaxLength} ${columnSettings} `;
 }
 
-module.exports = function writeToDBML({ tableName, primaryKeys, structure: colDefs }) {
+module.exports = function transformTableStructureToDBML({ tableName, primaryKeys, structure: colDefs }) {
   const columns = colDefs && Array.isArray(colDefs) ? colDefs : [];
   const columnDefinitions = columns.map(column => getColumnDefinition(column, primaryKeys));
   columnDefinitions.unshift(`Table "${tableName}" {`);

@@ -3,8 +3,16 @@
 const getSchemas = require('../queries/getSchemas');
 const getTablesInSchema = require('../queries/getTablesInSchema');
 const getTableStructure = require('../queries/getTableStructure');
-const getPrimaryKeys = require('../queries/getPrimaryKeys');
 const getConstraints = require('../queries/getConstraints');
+
+const getPrimaryKey = (schema, tableName, constraints) => {
+  if (!constraints) return undefined;
+  return constraints.find(({ constraintType, fromSchema, fromTable }) => {
+    return fromSchema === schema &&
+      fromTable === tableName &&
+      constraintType === "PRIMARY KEY";
+  });
+}
 
 /**
  * @function getDbStructure
@@ -43,11 +51,17 @@ module.exports = async function getDbStructure(schemaName, skipSchemas, skipTabl
   const getAllColumnDefs = allTables.map(async ({ constraints, schema, tables }) => {
     const getAllTableColumns = tables.map(async tableName => {
       const structure = await getTableStructure(schema, tableName);
-      const primaryKeys = await getPrimaryKeys(schema, tableName);
+      const primaryKey = getPrimaryKey(schema, tableName, constraints);
+      const structureWithConstraints = structure.map(column => {
+        const isPrimary = primaryKey && primaryKey.fromColumns.includes(column.ordinal_position);
+        return {
+          ...column,
+          isPrimary
+        }
+      });
       return {
         tableName,
-        structure,
-        primaryKeys
+        structure: structureWithConstraints
       };
     });
 
