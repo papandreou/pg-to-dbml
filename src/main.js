@@ -1,7 +1,7 @@
-
+'use strict';
 
 const yargs = require('yargs')
-const pgToDbmlDirect = require('./commands/pg-dbml');
+const toDbml = require('./commands/to-dbml');
 const pgDumpToDBML = require('./commands/pg_dump-to-dbml');
 
 function builder(myYargs) {
@@ -17,14 +17,30 @@ function builder(myYargs) {
         demandOption: true,
         describe: 'database name you want to create dbml file(s) from.'
       },
-      'schema_name': {
-        alias: 's',
-        describe: 'database schema name you want to create dbml file(s) from.'
+      'exclude_schemas': {
+        alias: 'S',
+        describe: 'schema names or Postgres regexes, e.g. inventory temp_%',
+        type: 'array'
       },
-
+      'exclude_tables': {
+        alias: 'T',
+        describe: 'table names or Postgres regexes to skip, e.g. lookup_% temporary',
+        type: 'array'
+      },
+      'include_schemas': {
+        alias: 's',
+        describe: 'database schema names you want to create dbml file(s) from.',
+        type: 'array'
+      },
       'o': {
         default: './',
-        describe: 'where you want the dbml files to be outputted.'
+        describe: 'output dir for the resulting dbml file(s).'
+      },
+      'sep': {
+        alias: 'separate_dbml_by_schema',
+        default: false,
+        describe: 'If present, will output dbml to separate files based on schema name, e.g. schema.dbml',
+        type: 'boolean'
       }
     })
     .nargs('t', 1)
@@ -35,10 +51,10 @@ function builder(myYargs) {
 
 yargs
   .command(
-    ['pg-dbml', '$0'],
+    ['to-dbml', '$0'],
     'default command. connects to pg db directly and creates dbml files.',
     builder,
-    argv => pgToDbmlDirect(argv)
+    argv => toDbml(argv)
   )
   .command(
     ['pg_dump-to-dbml', '$0'],
