@@ -24,24 +24,44 @@ CLI tool to scan your postgres database, and output DBML.
 
 ### How to use the cli
 
+To see all the commands and options, run `pg-to-dbml --help`
+
 ```
-Usage: pg-to-dbml [options]
+Usage: pg-to-dbml [command] [options]
+
+Commands:
+  to-dbml  default command. connects to pg db directly and creates dbml
+                    files.                                             [default]
 
 Options:
-  --help                   Show help                                   [boolean]
-  --version                Show version number                         [boolean]
-  -o, --output_path        where you want the dbml files to be outputted.
+  --version                         Show version number                [boolean]
+  --help                            Show help                          [boolean]
+  --connection_string, -c           database connection string for the db you
+                                    want to output dbml file(s).      [required]
+  --db_name, --db                   database name you want to create dbml
+                                    file(s) from.                     [required]
+  --exclude_schemas, -S             schema names or Postgres regexes, e.g.
+                                    inventory temp_%                     [array]
+  --exclude_tables, -T              table names or Postgres regexes to skip,
+                                    e.g. lookup_% temporary              [array]
+  --include_schemas, -s             database schema names you want to create
+                                    dbml file(s) from.                   [array]
+  -o, --output_path                 output dir for the resulting dbml file(s).
                                                                  [default: "./"]
-  -c, --connection_string  database connection string for the db you want to
-                           output dbml file(s).                       [required]
-  --db, --db_name          database name you want to create dbml file(s) from.
-                                                                      [required]
-  -t, --timeout            how long you want process to run before it exits
-                           process.                              [default: 5000]
+  --sep, --separate_dbml_by_schema  If present, will output dbml to separate
+                                    files based on schema name, e.g. schema.dbml
+                                                      [boolean] [default: false]
+  -t, --timeout                     how long you want process to run (in
+                                    milliseconds) before it exits process.
 ```
 
 ### Example Usage
-`pg-to-dbml --db=DB_NAME --c=postgresql://USER:PASSWORD@HOST:PORT -o='../'`
+
+// simple use case
+`pg-to-dbml --c=postgresql://USER:PASSWORD@HOST:PORT -o=pathToOutput --db=DB_NAME `
+
+// fuller use case  
+`pg-to-dbml -c postgresql://USER:PASSWORD@HOST:PORT -o=pathToOutput --db DB_NAME -s schemaName -T skipTableA skipTableB` 
 
 ## Linting
 

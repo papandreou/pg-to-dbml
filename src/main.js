@@ -1,48 +1,67 @@
+'use strict';
 
-const db = require('./db');
+const yargs = require('yargs')
+const toDbml = require('./commands/to-dbml');
 
-const getDbStructure = require('./funcs/getDbStructure');
-const writeResults = require('./funcs/writeResults');
-
-const argv = require('yargs')
-  .usage('Usage: $0 [options]')
-  .alias('o', 'output_path')
-  .nargs('o', 1)
-  .describe('o', 'where you want the dbml files to be outputted.')
-  .default('o', './')
-  .alias('c', 'connection_string')
-  .nargs('c', 1)
-  .describe('c', 'database connection string for the db you want to output dbml file(s).')
-  .alias('db', 'db_name')
-  .nargs('db', 1)
-  .describe('db', 'database name you want to create dbml file(s) from.')
-  .alias('t', 'timeout')
-  .nargs('t', 1)
-  .describe('t', 'how long you want process to run (in milliseconds) before it exits process.')
-  .default('t', 5000)
-  .demandOption(['c', 'db'])
-  .argv;
-
-async function main() {
-  const { c: dbConnectionString, db: dbName } = argv;
-
-  try {
-    await db.initialize({ dbConnectionString, dbName });
-    const dbStructure = await getDbStructure();
-    writeResults(dbStructure);
-    process.exit(0);
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
+function builder(myYargs) {
+  return myYargs.alias('o', 'output_path')
+    .options({
+      'connection_string': {
+        alias: 'c',
+        demandOption: true,
+        describe: 'database connection string for the db you want to output dbml file(s).'
+      },
+      'db_name': {
+        alias: 'db',
+        demandOption: true,
+        describe: 'database name you want to create dbml file(s) from.'
+      },
+      'exclude_schemas': {
+        alias: 'S',
+        describe: 'schema names or Postgres regexes, e.g. inventory temp_%',
+        type: 'array'
+      },
+      'exclude_tables': {
+        alias: 'T',
+        describe: 'table names or Postgres regexes to skip, e.g. lookup_% temporary',
+        type: 'array'
+      },
+      'include_schemas': {
+        alias: 's',
+        describe: 'database schema names you want to create dbml file(s) from.',
+        type: 'array'
+      },
+      'o': {
+        default: './',
+        describe: 'output dir for the resulting dbml file(s).'
+      },
+      'sep': {
+        alias: 'separate_dbml_by_schema',
+        default: false,
+        describe: 'If present, will output dbml to separate files based on schema name, e.g. schema.dbml',
+        type: 'boolean'
+      }
+    })
+    .nargs('t', 1)
+    .alias('t', 'timeout')
+    .describe('t', 'how long you want process to run (in milliseconds) before it exits process.')
+    .default('t', 5000);
 }
 
-main();
-
-process.on('exit', (code) => {
-  if (code === 0) {
-    console.log('process executed successfully.')
-  } else {
-    console.log('process exited unsuccessfully...')
-  }
-})
+yargs
+  .command(
+    ['to-dbml', '$0'],
+    'default command. connects to pg db directly and creates dbml files.',
+    builder,
+    argv => toDbml(argv)
+  )
+  .demandCommand(1, 'You need at least one command before moving on')
+  .help()
+  .fail(function (msg, err, yargs) {
+    if (err) throw err // preserve stack
+    console.error('You broke it!')
+    console.error(msg)
+    console.error('You should be doing', yargs.help())
+    process.exit(1)
+  })
+  .argv;
