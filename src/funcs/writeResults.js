@@ -17,11 +17,7 @@ const getFileName = ({
   splitDbmlBySchema
 }) => {
   const fileName = splitDbmlBySchema ? `${dbName}.${schema}` : dbName;
-<<<<<<< HEAD
   return path.join(dir, `${fileName}.dbml`);
-=======
-  return `${dir}/${fileName}.dbml`;
->>>>>>> a01a00aab0de9eccd583ee113f844baca83d8b2c
 }
 
 
