@@ -10,7 +10,7 @@ const getPrimaryKey = (schema, tableName, constraints) => {
   return constraints.find(({ constraintType, fromSchema, fromTable }) => {
     return fromSchema === schema &&
       fromTable === tableName &&
-      constraintType === "PRIMARY KEY";
+      constraintType === 'PRIMARY KEY';
   });
 }
 
@@ -32,7 +32,6 @@ const getPrimaryKey = (schema, tableName, constraints) => {
 
 async function getAllTables(schemas, skipTables) {
   const allTablesPromises = schemas.map(async schema => {
-    console.log(`found schema "${schema}"`);
     const tables = await getTablesInSchema(schema, skipTables);
     const constraints = await getConstraints(schema);
     return {

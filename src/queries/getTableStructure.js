@@ -15,7 +15,6 @@ const tableColumnInfoQuery = (dbName, schemaName, tableName) => `select cols.col
 
 module.exports = async function getTableStructure(schemaName, tableName) {
   const query = tableColumnInfoQuery(db.dbName, schemaName, tableName);
-  // console.log(`query: ${query}`)
   const res = await db.client.query(query);
   return res.rows;
 }

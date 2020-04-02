@@ -35,8 +35,6 @@ const getWhereClause = (includeSchemas, skipSchemas) => {
 module.exports = async function getSchemas(includeSchemas, skipSchemas) {
   const whereClause = getWhereClause(includeSchemas, skipSchemas);
   const schemasQuery = `${baseQuery} ${whereClause};`;
-
-  console.log(`schemas query: ${schemasQuery}`);
   const res = await db.client.query(schemasQuery);
   return res.rows.map(schema => schema.nspname).sort();
 };

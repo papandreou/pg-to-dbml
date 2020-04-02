@@ -20,7 +20,6 @@ const getConstraintType = constraintDefinition => {
 
 module.exports = async function getConstraints(schemaName) {
   const query = getQuery(schemaName);
-  // console.log(`query: ${query} `)
   const res = await db.client.query(query);
   return res.rows.map(({
     constraint_definition: constraintDefinition,

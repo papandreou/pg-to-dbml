@@ -1,3 +1,7 @@
+'use strict';
+
+const path = require('path');
+
 const yargs = require('yargs')
 
 const transformTableStructureToDBML = require('./transformTableStructureToDBML');
@@ -13,7 +17,7 @@ const getFileName = ({
   splitDbmlBySchema
 }) => {
   const fileName = splitDbmlBySchema ? `${dbName}.${schema}` : dbName;
-  return `${dir}/${fileName}.dbml`;
+  return path.join(dir, `${fileName}.dbml`);
 }
 
 
@@ -55,12 +59,11 @@ module.exports = schemaStructures => {
       createFile(filePathWithName);
     }
 
-    // console.log(`dumping schema ${schema} structure to ${filePathWithName}`);
     tables.forEach((tableDefinition) => {
       const dbml = transformTableStructureToDBML(tableDefinition, schema, includeSchemaName);
       writeToFile(filePathWithName, dbml);
     });
-    const relationsDbml = transformFKsToRefsDBML(schema, tables, constraints, includeSchemaName, columnGetter);
+    const relationsDbml = transformFKsToRefsDBML(schema, constraints, includeSchemaName, columnGetter);
     writeToFile(filePathWithName, relationsDbml, splitDbmlBySchema);
   });
 }

@@ -21,7 +21,6 @@ const getWhereClause = (skipTables) => {
 module.exports = async function getTablesInSchema(schemaName, skipTables) {
   const whereClause = getWhereClause(skipTables);
   const queryGetTablesInSchema = getQuery(schemaName, whereClause);
-  // console.log(`tables query for schema ${schemaName}: ${queryGetTablesInSchema}`);
   const res = await db.client.query(queryGetTablesInSchema);
   return res.rows.map(row => row.tablename).sort();
 }

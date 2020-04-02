@@ -2,7 +2,7 @@
 
 const { EOL } = require('os');
 
-module.exports = function transformFKsToRefsDBML(schemaName, tables, constraints, includeSchemaName, columnGetter) {
+module.exports = function transformFKsToRefsDBML(schemaName, constraints, includeSchemaName, columnGetter) {
   // NOTE: only handling in-schema relationships... not FKs to other schemas
   //       because DBML does not yet handle that situation
   const dbml = constraints
