@@ -32,6 +32,10 @@ const getPrimaryKey = (schema, tableName, constraints) => {
 
 async function getAllTables(schemas, skipTables) {
   const allTablesPromises = schemas.map(async schema => {
+<<<<<<< HEAD:src/funcs/getDbSchemaStructures.js
+=======
+    console.log(`found schema "${schema}"`);
+>>>>>>> a01a00aab0de9eccd583ee113f844baca83d8b2c:src/funcs/getDbStructure.js
     const tables = await getTablesInSchema(schema, skipTables);
     const constraints = await getConstraints(schema);
     return {
