@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## next
+## 0.2.0
 
 ### Changes
 
