@@ -57,10 +57,10 @@ Options:
 
 ### Example Usage
 
-// simple use case
+Simple use case:  
 `pg-to-dbml --c=postgresql://USER:PASSWORD@HOST:PORT -o=pathToOutput --db=DB_NAME `
 
-// fuller use case  
+Fuller use case:  
 `pg-to-dbml -c postgresql://USER:PASSWORD@HOST:PORT -o=pathToOutput --db DB_NAME -s schemaName -T skipTableA skipTableB` 
 
 ## Linting
