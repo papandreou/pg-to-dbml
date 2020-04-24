@@ -21,14 +21,16 @@ const getFileName = ({
 }
 
 
-const getColumnGetter = schemas => (schemaName, tableName, ordinalPosition) =>
-  schemas
+const getColumnGetter = schemas => (schemaName, tableName, ordinalPosition) => {
+  const cleanTableName = tableName.replace(/"/g, '');
+  return schemas
     .filter(({ schema }) => schema === schemaName)
     .reduce((acc, { tables }) => [].concat(acc, [...tables]), [])
-    .filter(table => table.tableName === tableName)
+    .filter(table => table.tableName === cleanTableName)
     .map(({ structure }) => {
       return structure.find(column => column.ordinal_position === ordinalPosition);
     })[0];
+};
 
 module.exports = schemaStructures => {
   const { db: dbName, o: outputDir, separate_dbml_by_schema: splitDbmlBySchema } = yargs.argv;
