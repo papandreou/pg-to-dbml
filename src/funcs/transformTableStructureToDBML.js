@@ -9,9 +9,13 @@ const getColumnType = (col) => {
     case 'varchar':
       columnType = 'varchar';
       break;
+    case 'double precision':
+      columnType = 'number';
+      break;
     case 'timestamp':
     case 'timestamp with time zone':
     case 'timestamp without time zone':
+    case 'time without time zone':
       columnType = 'timestamp';
       break;
     default:
@@ -34,7 +38,7 @@ const getColumnDefault = (columnDefault, dataType) => {
     return `default: \`${cleanedUp}\``;
   } else {
     const useQuotes = ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
-    return useQuotes ? `default: '${cleanedUp}'` : `default: ${cleanedUp}`;
+    return useQuotes ? `default: "${cleanedUp}"` : `default: ${cleanedUp}`;
   }
 }
 

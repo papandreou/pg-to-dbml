@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.2.1
+
+### Changes
+
+- Fixed bug #21
+- Updated queries to work with Postgres system tables and commands, per Postgres version 9.3.25.
+- Updated column default note to use double quotes since the database column notes themselves can have single-quotes.
+- Added transform of `time without timezone` to `timestamp`
+- Added transform of `double precision` to `number`
+
 ## 0.2.0
 
 ### Changes

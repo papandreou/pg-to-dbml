@@ -6,10 +6,11 @@ const getQuery = schemaName => `
     conkey AS table_from_constraint_columns,
     pg_get_constraintdef(oid) AS constraint_definition,
     confrelid::regclass AS to_schema_table,
-    confkey AS table_to_contstraint_columns
+    confkey AS table_to_contstraint_columns,
+    connamespace
   FROM   pg_constraint pgc
   WHERE  contype IN ('f', 'p', 'u')
-  AND    connamespace = '${schemaName}'::regnamespace
+  AND    connamespace = (SELECT pn2.oid FROM pg_catalog.pg_namespace pn2 WHERE pn2.nspname = '${schemaName}')
   ORDER  BY conrelid::regclass::text, contype DESC;`;
 
 const getConstraintType = constraintDefinition => {
