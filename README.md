@@ -1,28 +1,35 @@
 # pg-to-dbml
 
-### Description
+## Description
 CLI tool to scan your postgres database, and output DBML.
 - [pg-to-dbml](#pg-to-dbml)
-    - [Description](#description)
-    - [Tech Stack](#tech-stack)
-    - [Download and install](#download-and-install)
-    - [How to use the cli](#how-to-use-the-cli)
-    - [Example Usage](#example-usage)
+  - [Description](#description)
+  - [Tech Stack](#tech-stack)
+  - [Download and install](#download-and-install)
+  - [Note to pg-to-dbml package maintenance developers](#note-to-pg-to-dbml-package-maintenance-developers)
+  - [How to use the cli](#how-to-use-the-cli)
+  - [Example Usage](#example-usage)
   - [Linting](#linting)
   - [Debugging](#debugging)
   - [Changelog](#changelog)
 
-### Tech Stack
+## Tech Stack
 
 - [NodeJS](https://nodejs.org/en/docs/)
 - [Yargs](http://yargs.js.org/)
 - [PG](https://node-postgres.com/)
 
-### Download and install
+## Download and install
 
-`npm install pg-to-dbml` 
+`npm install` 
 
-### How to use the cli
+## Note to pg-to-dbml package maintenance developers
+
+If you've cloned the pg-to-dbml repo and are working with the pg-to-dbml source code, be sure to substitute `node index` for `pg-to-dbml` when you issue terminal commands.
+
+For example, instead of `run pg-to-dbml --help`, you would use `node index --help`.
+
+## How to use the cli
 
 To see all the commands and options, run `pg-to-dbml --help`
 
@@ -55,7 +62,7 @@ Options:
                                     milliseconds) before it exits process.
 ```
 
-### Example Usage
+## Example Usage
 
 Simple use case:  
 `pg-to-dbml --c=postgresql://USER:PASSWORD@HOST:PORT -o=pathToOutput --db=DB_NAME `
