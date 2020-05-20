@@ -20,7 +20,7 @@ CLI tool to scan your postgres database, and output DBML.
 
 ### Download and install
 
-`npm imstall pg-to-dbml` 
+`npm install pg-to-dbml` 
 
 ### How to use the cli
 
