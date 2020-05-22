@@ -9,11 +9,11 @@ const systemSchemas = [
   'information%'
 ];
 
+// TODO: tests!
 const getWhereClause = (includeSchemas, skipSchemas) => {
-
-  const includeSchemaConditions = includeSchemas.reduce((acc, skipThisSchema, idx, arr) => {
-    const addAnd = (idx === (arr.length - 1)) ? '' : 'OR';
-    return `${acc}pn.nspname LIKE '${skipThisSchema}' ${addAnd} `;
+  const includeSchemaConditions = includeSchemas && includeSchemas.reduce((acc, skipThisSchema, idx, arr) => {
+    const addOr = (idx === (arr.length - 1)) ? '' : ' OR ';
+    return `${acc}pn.nspname LIKE '${skipThisSchema}'${addOr}`;
   }, '');
 
   const schemasToSkip = [
@@ -21,11 +21,23 @@ const getWhereClause = (includeSchemas, skipSchemas) => {
     ...systemSchemas
   ];
   const excludeSchemaConditions = schemasToSkip.reduce((acc, skipThisSchema, idx, arr) => {
-    const addAnd = (idx === (arr.length - 1)) ? '' : 'AND';
-    return `${acc}pn.nspname NOT LIKE '${skipThisSchema}' ${addAnd} `;
+    const addAnd = (idx === (arr.length - 1)) ? '' : ' AND ';
+    return `${acc}pn.nspname NOT LIKE '${skipThisSchema}'${addAnd}`;
   }, '');
 
-  return `WHERE (${includeSchemaConditions}) ${includeSchemaConditions && excludeSchemaConditions && 'AND'} (${excludeSchemaConditions})`;
+  const whereClauseBits = [];
+  let whereClause = '';
+
+  if (includeSchemaConditions) whereClauseBits.push(`(${includeSchemaConditions})`);
+  if (includeSchemaConditions && excludeSchemaConditions) whereClauseBits.push('AND');
+  if (excludeSchemaConditions) whereClauseBits.push(`(${excludeSchemaConditions})`);
+
+  if (whereClauseBits.length > 0) {
+    whereClauseBits.unshift('WHERE');
+    whereClause = whereClauseBits.join(' ');
+  }
+
+  return whereClause;
 };
 
 /**
@@ -34,7 +46,8 @@ const getWhereClause = (includeSchemas, skipSchemas) => {
  */
 module.exports = async function getSchemas(includeSchemas, skipSchemas) {
   const whereClause = getWhereClause(includeSchemas, skipSchemas);
-  const schemasQuery = `${baseQuery} ${whereClause};`;
+  const schemasQuery = whereClause ? `${baseQuery} ${whereClause}; ` : `${baseQuery} `;
+  // console.log('schemasQuery: ', schemasQuery)
   const res = await db.client.query(schemasQuery);
   return res.rows.map(schema => schema.nspname).sort();
 };
