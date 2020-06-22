@@ -1,0 +1,6 @@
+bug: bugfix/*
+documentation: doc/*
+feature: feature/*
+hotfix: hotfix/*
+refactor: refactor/*
+techtask: tech/*
