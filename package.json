@@ -1,6 +1,10 @@
 {
   "name": "@polarislabs/pg-to-dbml",
   "version": "0.2.1",
+  "engineStrict": true,
+  "engines": {
+      "node": "12.18.3"
+  },
   "description": "CLI tool to scan your postgres database, and output DBML.",
   "main": "index.js",
   "scripts": {
