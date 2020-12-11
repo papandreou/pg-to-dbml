@@ -34,7 +34,7 @@ const getColumnDefault = (columnDefault, dataType) => {
     return `default: \`${columnDefault}\``;
   } else {
     const useQuotes = ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
-    return useQuotes ? `default: "${columnDefault}"` : `default: ${columnDefault}`;
+    return useQuotes ? `default: '${columnDefault}'` : `default: ${columnDefault}`;
   }
 }
 
