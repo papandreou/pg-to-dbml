@@ -24,19 +24,17 @@ const getColumnType = (col) => {
   return columnType;
 }
 
-const cleanUpColumnDefault = columnDefault => columnDefault.replace(/[']/g, "")
 
 const getColumnDefault = (columnDefault, dataType) => {
-  if (!columnDefault) return '';
-  const cleanedUp = cleanUpColumnDefault(columnDefault);
+  if (!columnDefault || columnDefault.includes('::')) return '';
   const isFuncRegEx = /\(/;
-  const isFunc = isFuncRegEx.test(cleanedUp);
+  const isFunc = isFuncRegEx.test(columnDefault);
 
   if (isFunc) {
-    return `default: \`${cleanedUp}\``;
+    return `default: \`${columnDefault}\``;
   } else {
     const useQuotes = ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
-    return useQuotes ? `default: "${cleanedUp}"` : `default: ${cleanedUp}`;
+    return useQuotes ? `default: "${columnDefault}"` : `default: ${columnDefault}`;
   }
 }
 
