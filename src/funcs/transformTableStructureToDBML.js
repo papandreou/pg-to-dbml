@@ -24,9 +24,7 @@ const getColumnType = (col) => {
   return columnType;
 }
 
-const cleanUpColumnDefault = columnDefault => columnDefault && columnDefault.includes('::text')
-  ? columnDefault.replace(/::text/gi, '').replace(/'/gi, '')
-  : columnDefault;
+const cleanUpColumnDefault = columnDefault => columnDefault.replace(/[']/g, "")
 
 const getColumnDefault = (columnDefault, dataType) => {
   if (!columnDefault) return '';
