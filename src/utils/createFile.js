@@ -1,7 +1,7 @@
-const { constants, fs } = require('fs');
+const { constants, existsSync, writeFileSync } = require('fs');
 
 module.exports = (fileName) => {
-  if (fs.existsSync(fileName, constants.R_OK | constants.W_OK)) {
-    fs.writeFileSync(fileName, '', () => { });
+  if (existsSync(fileName, constants.R_OK | constants.W_OK)) {
+    writeFileSync(fileName, '', () => { });
   }
 }
