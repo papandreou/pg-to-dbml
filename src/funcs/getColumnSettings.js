@@ -21,7 +21,7 @@ const getColumnSettings = (col) => {
   const notNullSetting = !isNullable && 'not null';
   if (notNullSetting) columnSettings.unshift(notNullSetting);
 
-  const note = columnComment && `note:'${columnComment}'`;
+  const note = columnComment && `note: '${columnComment}'`;
   if (note) columnSettings.unshift(note);
 
 
