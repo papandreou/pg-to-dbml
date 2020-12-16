@@ -24,21 +24,17 @@ const getColumnType = (col) => {
   return columnType;
 }
 
-const cleanUpColumnDefault = columnDefault => columnDefault && columnDefault.includes('::text')
-  ? columnDefault.replace(/::text/gi, '').replace(/'/gi, '')
-  : columnDefault;
 
 const getColumnDefault = (columnDefault, dataType) => {
-  if (!columnDefault) return '';
-  const cleanedUp = cleanUpColumnDefault(columnDefault);
+  if (!columnDefault || columnDefault.includes('::')) return '';
   const isFuncRegEx = /\(/;
-  const isFunc = isFuncRegEx.test(cleanedUp);
+  const isFunc = isFuncRegEx.test(columnDefault);
 
   if (isFunc) {
-    return `default: \`${cleanedUp}\``;
+    return `default: \`${columnDefault}\``;
   } else {
     const useQuotes = ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
-    return useQuotes ? `default: "${cleanedUp}"` : `default: ${cleanedUp}`;
+    return useQuotes ? `default: '${columnDefault}'` : `default: ${columnDefault}`;
   }
 }
 
@@ -84,11 +80,19 @@ const getColumnDefinition = (col) => {
   return `\t"${columnName}" ${dataType}${characterMaxLength} ${columnSettings} `;
 }
 
-module.exports = function transformTableStructureToDBML({ tableName, primaryKeys, structure: colDefs }, schemaName, includeSchemaName) {
+const transformTableStructureToDBML = ({ tableName, primaryKeys, structure: colDefs }, schemaName, includeSchemaName) => {
   const columns = colDefs && Array.isArray(colDefs) ? colDefs : [];
   const columnDefinitions = columns.map(column => getColumnDefinition(column, primaryKeys));
   const tableNameString = includeSchemaName ? `${schemaName}.${tableName}` : tableName;
   columnDefinitions.unshift(`Table "${tableNameString}" {`);
   columnDefinitions.push(`} ${EOL} ${EOL} `);
   return columnDefinitions.join(`${EOL} `);
+}
+
+module.exports = {
+  transformTableStructureToDBML,
+  getColumnDefinition,
+  getColumnSettings,
+  getColumnDefault,
+  getColumnType
 }

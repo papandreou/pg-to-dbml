@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.2.2
+
+### Changes
+
+- HPAPI-308: remove defaults that break dbml.
+
+
 ## 0.2.1
 
 ### Changes
