@@ -17,17 +17,17 @@ describe('getColumnType()', () => {
     expect(response).toEqual('number')
   })
 
-  it(`returns 'number' when data_type = 'timestamp with time zone'.`, () => {
+  it(`returns 'timestamp' when data_type = 'timestamp with time zone'.`, () => {
     const columnType = { data_type: 'timestamp with time zone'}
     const response = getColumnType(columnType);
     expect(response).toEqual('timestamp')
   })
-  it(`returns 'number' when data_type = 'timestamp without time zone'.`, () => {
+  it(`returns 'timestamp' when data_type = 'timestamp without time zone'.`, () => {
     const columnType = { data_type: 'timestamp without time zone'}
     const response = getColumnType(columnType);
     expect(response).toEqual('timestamp')
   })
-  it(`returns 'number' when data_type = 'time without time zone'.`, () => {
+  it(`returns 'timestamp' when data_type = 'time without time zone'.`, () => {
     const columnType = { data_type: 'time without time zone'}
     const response = getColumnType(columnType);
     expect(response).toEqual('timestamp')
