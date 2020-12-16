@@ -4,7 +4,7 @@ const path = require('path');
 
 const yargs = require('yargs')
 
-const { transformTableStructureToDBML} = require('./transformTableStructureToDBML');
+const transformTableStructureToDBML= require('./transformTableStructureToDBML');
 const transformFKsToRefsDBML = require('./transformFKsToRefsDBML');
 
 const createFile = require('../utils/createFile');

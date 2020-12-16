@@ -1,5 +1,5 @@
 // NOTE: possible to use https://www.dbml.org/js-module/#api for the transform to dbml?
-const getColumnType = (col) => {
+module.exports = function getColumnType(col) {
   const { data_type: dataType } = col;
   let columnType;
   switch (dataType) {
@@ -20,6 +20,4 @@ const getColumnType = (col) => {
       columnType = dataType;
   }
   return columnType;
-}
-
-module.exports = { getColumnType }
+};

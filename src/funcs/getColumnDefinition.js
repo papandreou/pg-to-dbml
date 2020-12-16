@@ -1,7 +1,7 @@
-const { getColumnType } = require('./getColumnType');
-const { getColumnSettings } = require('./getColumnSettings');
+const getColumnType = require('./getColumnType');
+const getColumnSettings = require('./getColumnSettings');
 
-const getColumnDefinition = (col) => {
+module.exports = function getColumnDefinition(col) {
   const {
     character_maximum_length: charMaxLength,
     column_name: columnName
@@ -14,4 +14,3 @@ const getColumnDefinition = (col) => {
   return `\t"${columnName}" ${dataType}${characterMaxLength} ${columnSettings} `;
 }
 
-module.exports = { getColumnDefinition }

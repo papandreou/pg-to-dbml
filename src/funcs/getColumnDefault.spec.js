@@ -1,4 +1,4 @@
-const { getColumnDefault } = require('./getColumnDefault');
+const getColumnDefault = require('./getColumnDefault');
 
 describe('getColumnDefault()', () => {
   it(`returns '' if '::' is in the default value string.` , () => {

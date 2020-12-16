@@ -1,4 +1,4 @@
-const { getColumnType } = require('./getColumnType');
+const getColumnType = require('./getColumnType');
 
 describe('getColumnType()', () => {
   it('returns same data_type as given.', () => {

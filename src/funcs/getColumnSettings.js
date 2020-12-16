@@ -1,7 +1,7 @@
-const { getColumnDefault } = require('./getColumnDefault.js');
+const getColumnDefault = require('./getColumnDefault.js');
 
 // NOTE: see https://www.dbml.org/docs/#project-definition
-const getColumnSettings = (col) => {
+module.exports = function getColumnSettings(col) {
   const {
     column_comment: columnComment,
     column_default: columnDefault,
@@ -26,6 +26,4 @@ const getColumnSettings = (col) => {
 
 
   return columnSettings.length > 0 ? `[${columnSettings.join(', ')}]` : '';
-}
-
-module.exports = { getColumnSettings };
+};
