@@ -4,7 +4,8 @@
 
 ### Changes
 
-- HPAPI-308: remove defaults that break dbml.
+- HPAPI-308: Remove defaults that break dbml.
+- HPAPI-342: Add in Jest unit tests.
 
 
 ## 0.2.1
