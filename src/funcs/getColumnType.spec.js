@@ -32,8 +32,8 @@ describe('getColumnType()', () => {
     const response = getColumnType(columnType);
     expect(response).toEqual('timestamp')
   })
-  it(`returns undefined if not given coreect object input`, () => {
-    const columnType = { data: 'value of incorrect property'}
+  it(`returns undefined if argument object does not have property 'data_type'`, () => {
+    const columnType = { not_data_type: 'value of incorrect property'}
     const response = getColumnType(columnType);
     expect(response).toBeUndefined()
   })  
