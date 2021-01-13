@@ -24,6 +24,5 @@ module.exports = function getColumnSettings(col) {
   const note = columnComment && `note: '${columnComment}'`;
   if (note) columnSettings.unshift(note);
 
-
   return columnSettings.length > 0 ? `[${columnSettings.join(', ')}]` : '';
 };

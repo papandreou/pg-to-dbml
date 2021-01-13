@@ -1,4 +1,4 @@
-const db = require('../db')
+const db = require('../db');
 
 const tableColumnInfoQuery = (dbName, schemaName, tableName) => `select cols.column_name, 
          cols.column_default, 
@@ -16,6 +16,6 @@ const tableColumnInfoQuery = (dbName, schemaName, tableName) => `select cols.col
 module.exports = async function getTableStructure(schemaName, tableName) {
   const query = tableColumnInfoQuery(db.dbName, schemaName, tableName);
   const res = await db.client.query(query);
-  return res.rows;
-}
 
+  return res.rows;
+};

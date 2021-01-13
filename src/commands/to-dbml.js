@@ -1,5 +1,3 @@
-'use strict';
-
 const db = require('../db');
 const getDbSchemaStructures = require('../funcs/getDbSchemaStructures');
 const writeResults = require('../funcs/writeResults');
