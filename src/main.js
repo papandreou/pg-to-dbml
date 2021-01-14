@@ -48,6 +48,7 @@ function builder(myYargs) {
     .default('t', 5000);
 }
 
+// eslint-disable-next-line no-unused-expressions
 Yargs.command(
   ['to-dbml', '$0'],
   'default command. connects to pg db directly and creates dbml files.',
