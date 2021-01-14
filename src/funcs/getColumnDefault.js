@@ -5,8 +5,10 @@ module.exports = function getColumnDefault(columnDefault, dataType) {
 
   if (isFunc) {
     return `default: \`${columnDefault}\``;
-  } else {
-    const useQuotes = ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
-    return useQuotes ? `default: '${columnDefault}'` : `default: ${columnDefault}`;
   }
+
+  const useQuotes =
+    ['varchar', 'character', 'char', 'text', 'timestamp'].findIndex(type => type === dataType) > -1;
+
+  return useQuotes ? `default: '${columnDefault}'` : `default: ${columnDefault}`;
 };

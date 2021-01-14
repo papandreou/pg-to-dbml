@@ -19,5 +19,6 @@ module.exports = function getColumnType(col) {
     default:
       columnType = dataType;
   }
+
   return columnType;
 };

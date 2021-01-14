@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.2.3
+
+### Changes
+
+- HPAPI-10: Add linting to package.
+
 ## 0.2.2
 
 ### Changes
