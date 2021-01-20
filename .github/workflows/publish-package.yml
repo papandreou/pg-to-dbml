@@ -1,0 +1,31 @@
+name: Publish to Github Packages
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Use Node
+        uses: actions/setup-node@v1
+        with:
+          registry-url: https://npm.pkg.github.com
+          scope: "@polarislabs"
+      - name: Switch to the Node version in the .nvmrc
+        shell: bash -l {0}
+        run: nvm install
+      - name: Install dependencies
+        run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - name: Build package
+        run: npm run build
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - name: Publish to Github Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,26 @@
+name: 'Check package.json version'
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check_package_version:
+    runs-on: ubuntu-latest
+    name: A job to check if package version was incremented based on semver
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - uses: MontyD/package-json-updated-action@1.0.1
+        id: version-updated
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: package.json
+      - name: Comment PR
+        uses: unsplash/comment-on-pr@master
+        if: ${{ steps.version-updated.outputs.has-updated != true }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: "⚠**Please make sure the package.json version is updated prior to merge!!**"

@@ -1,0 +1,59 @@
+name: Code Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "**.js"
+      - "**.json"
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "**.js"
+      - "**.json"
+
+env:
+  NODE_ENV: development
+  CI: true
+
+jobs:
+  code-checks:
+    name: "Lint and Test"
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: "Checkout Code"
+        uses: actions/checkout@v2
+      - name: "Setup Node"
+        uses: actions/setup-node@v1
+        with:
+          registry-url: "https://npm.pkg.github.com/"
+          scope: "@polarislabs"
+      - name: Switch to the Node version in the .nvmrc
+        shell: bash -l {0}
+        run: nvm install
+      - name: "Install dependencies"
+        run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - name: "Lint"
+        run: npm run lint
+      - name: "Test"
+        if: success()
+        run: npm test
+  remind:
+    name: Changelog Reminder
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Changelog Reminder
+        uses: peterjgrainger/action-changelog-reminder@v1.2.0
+        with:
+          changelog_regex: "/CHANGELOG.md/"
+          customPrMessage: "**Reminder**: For a new feature or bugfix, please be awesome 🔥 and update the **CHANGELOG.md** 📝. Thank you. 🙏"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
