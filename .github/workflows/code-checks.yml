@@ -10,7 +10,7 @@ on:
       - "**.json"
   push:
     branches:
-      - main
+      - master
     paths:
       - "src/**"
       - "**.js"
