@@ -2,7 +2,7 @@ name: 'Check package.json version'
 on:
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   check_package_version:

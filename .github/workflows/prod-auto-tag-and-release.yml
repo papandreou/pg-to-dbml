@@ -3,7 +3,7 @@ name: Auto Tag and Release
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   auto-tag-prod:
