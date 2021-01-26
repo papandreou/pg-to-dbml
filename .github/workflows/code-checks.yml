@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - master
+      - develop
     paths:
       - "src/**"
       - "**.js"
@@ -37,7 +38,7 @@ jobs:
         shell: bash -l {0}
         run: nvm install
       - name: "Install dependencies"
-        run: npm install
+        run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
       - name: "Lint"
