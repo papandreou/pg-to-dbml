@@ -1,0 +1,40 @@
+name: Auto Tag and Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  auto-tag-prod:
+    name: 'Auto tag release to prod'
+    runs-on: ubuntu-latest
+    outputs:
+      new-tag: ${{ steps.autotag.outputs.tagname }}
+    steps:
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: autotag
+        uses: butlerlogic/action-autotag@stable
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        with:
+          tag_prefix: 'v'
+  create-release-from-tag:
+    name: 'Create release from tagged commit'
+    needs: auto-tag-prod
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Creating release from ${{needs.auto-tag-prod.outputs.new-tag}}"
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{needs.auto-tag-prod.outputs.new-tag}}
+          release_name: Release ${{needs.auto-tag-prod.outputs.new-tag}}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false

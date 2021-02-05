@@ -1,0 +1,15 @@
+name: 'First Time Greeting'
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  pr-greeter:
+    name: 'Great first-time contributor!'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'First PR greeter'
+        uses: JJ/pr-greeting-action@releases/v0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          pr-message: 'Hey **#** welcome to the `polaris-components` repository!! Congrats on your first PR! 🥳'

@@ -26,7 +26,7 @@ jobs:
       - name: Switch to the Node version in the .nvmrc
         shell: bash -l {0}
         run: nvm install
-      - run: npm install
+      - run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
   publish-to-npm:
