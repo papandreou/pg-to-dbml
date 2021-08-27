@@ -19,7 +19,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Use Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           registry-url: https://npm.pkg.github.com
           scope: "@polarislabs"
@@ -36,7 +36,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Use Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           registry-url: https://registry.npmjs.org
       - name: Switch to the Node version in the .nvmrc
@@ -52,7 +52,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Use Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           registry-url: https://npm.pkg.github.com
           scope: "@polarislabs"
