@@ -12,6 +12,7 @@ CLI tool to scan your postgres database, and output DBML.
   - [Linting](#linting)
   - [Debugging](#debugging)
   - [Changelog](#changelog)
+  - [Making a Pull Request](#making-a-pull-request)
 
 ## Tech Stack
 
@@ -84,4 +85,13 @@ Running in debug mode in VS Code is easy. Toggle the debugger to auto-attach, an
 
 All pull requests should include an update to the [CHANGELOG](./CHANGELOG.md) that follows the existing pattern there.
 
-Version numbers will follow [Semantic Versioning](https://semver.org/).
+## Making a Pull Request
+
+When making a pull request, label the PR with the semver version bump you wish to make (`major`, `minor`, or `patch`), and Github Actions will take care of the whole release process. It will:
+
+  - Substitute `x.x.x` in the changelog with the new version number
+  - Move the changelog to the `docs/changelogs` directory, and start a new one from a template
+  - Version bump the `package.json` and `package-lock.json`
+  - Commit, tag, and push the results to `main`
+  - Publish the package to Github Packages and NPM
+  - And create a Github Release
