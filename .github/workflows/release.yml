@@ -1,7 +1,7 @@
 # Notes on the tokens being used:
 #   GITHUB_TOKEN: Provided by Github by default. Allows publishing to Github Packages for the current repo only.
 #   NPM_TOKEN: Allows publishing to NPM Registry as the polaris-build user.
-#   POLARIS_BOT_TOKEN: Allows git pushing as the polaris-aws-build user.
+#   POLARIS_BOT_TOKEN: Allows git pushing as the polaris-aws-build user, and also allows npm to install other internal packages from Github packages.
 
 name: Release
 
@@ -125,7 +125,10 @@ jobs:
       - name: Switch to the Node version in the .nvmrc
         shell: bash -l {0}
         run: nvm install
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.POLARIS_BOT_TOKEN }}
       - name: Publish to NPM
         run: npm publish --access public
         env:
@@ -149,7 +152,10 @@ jobs:
       - name: Switch to the Node version in the .nvmrc
         shell: bash -l {0}
         run: nvm install
-      - run: npm ci
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.POLARIS_BOT_TOKEN }}
       - name: Publish to Github Packages
         run: npm publish
         env:
