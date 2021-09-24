@@ -4,6 +4,6 @@
 
 ### Features
 
-- JIRA-123: Added this feature
+- JIRA-123: Added this feature.
 
 ### Bug Fixes

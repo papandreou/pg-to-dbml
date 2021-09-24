@@ -87,7 +87,7 @@ All pull requests should include an update to the [CHANGELOG](./CHANGELOG.md) th
 
 ## Making a Pull Request
 
-When making a pull request, label the PR with the semver version bump you wish to make (`major`, `minor`, or `patch`), and Github Actions will take care of the whole release process. It will:
+When making a pull request, label the PR with the type of semver version bump you wish to make (`major`, `minor`, or `patch`), and Github Actions will take care of the whole release process. It will:
 
   - Substitute `x.x.x` in the changelog with the new version number
   - Move the changelog to the `docs/changelogs` directory, and start a new one from a template
