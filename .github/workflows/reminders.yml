@@ -1,0 +1,91 @@
+name: Reminders
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - labeled
+      - unlabeled
+      - synchronize
+
+jobs:
+  semver-labels:
+    runs-on: ubuntu-latest
+    name: Check for semver labels
+    steps:
+      - name: Check labels, and comment if no semver label is found
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const labels = context.payload.pull_request.labels;
+
+            // Filter for just the semver labels
+            const semverLabels = labels.filter((label) =>
+              label.name.match(/major|minor|patch/)
+            );
+
+            // If there's only one semver label, exit with success
+            if (semverLabels.length === 1) {
+              console.log(`Found label: ${semverLabels[0].name}`);
+              process.exit();
+            }
+
+            try {
+              if (semverLabels.length < 1) throw "No semver label found.";
+              if (semverLabels.length > 1) throw "More than one semver label found.";
+            } catch (err) {
+              console.debug(
+                `Dumping the labels found, for debugging purposes: ${JSON.stringify(
+                  labels,
+                  null,
+                  "  "
+                )}`
+              );
+
+              console.log(`Creating a GitHub comment with the message: ${err}`)
+
+              // Create comment, and exit with error
+              await github.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `⚠ ${err} ⚠ \nPlease label the PR with \`major\`, \`minor\`, or \`patch\`.`,
+              }).then(() => process.exit(1));
+            }
+
+  changelog:
+    name: Check for updated changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Changelog Reminder
+        uses: peterjgrainger/action-changelog-reminder@v1.3.0
+        with:
+          changelog_regex: "/CHANGELOG.md"
+          customPrMessage: "**Reminder**: For a new feature or bugfix, please be awesome 🔥 and update the **CHANGELOG.md** 📝. Thank you. 🙏"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  empty-changelog-version:
+    name: Check for empty version number in changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Check for an empty version
+        id: empty-version-check
+        continue-on-error: true
+        run: grep 'x.x.x' CHANGELOG.md
+      - name: Comment
+        if: steps.empty-version-check.outcome == 'failure'
+        uses: actions/github-script@v4
+        with:
+          script: |
+            await github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "Please change the version number in the changelog to `x.x.x`. Then Github Actions will update it on PR merge.",
+            }).then(() => process.exit(1));

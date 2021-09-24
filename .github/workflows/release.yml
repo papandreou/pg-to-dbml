@@ -1,0 +1,162 @@
+# Notes on the tokens being used:
+#   GITHUB_TOKEN: Provided by Github by default. Allows publishing to Github Packages for the current repo only.
+#   NPM_TOKEN: Allows publishing to NPM Registry as the polaris-build user.
+#   POLARIS_BOT_TOKEN: Allows git pushing as the polaris-aws-build user, and also allows npm to install other internal packages from Github packages.
+
+name: Release
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  bump-version:
+    name: Bump version
+    # Double-check that the PR is a merged PR.
+    #   https://stackoverflow.com/a/67833464/7733616
+    if: ${{ github.event.pull_request.merged }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.POLARIS_BOT_TOKEN }}
+
+      - name: Output the semver label
+        id: output-semver-label
+        uses: actions/github-script@v4
+        with:
+          result-encoding: string
+          script: |
+            const labels = context.payload.pull_request.labels;
+
+            const semverLabels = labels.filter((label) => (
+              label.name.match(/major|minor|patch/)
+            ))
+
+            // No other error checking, since the Reminders Action should have caught everything before allowing this PR to merge.
+
+            return semverLabels[0].name;
+
+      - name: Calculate the new version number
+        run: |
+          SEMVER_LEVEL="${{ steps.output-semver-label.outputs.result }}"
+
+          # Get the current version from the package.json
+          CURRENT_VERSION=$(jq --raw-output .version package.json)
+
+          # Find the new version number using the given semver label
+          NEW_VERSION=$(npx semver@7 --increment $CURRENT_VERSION $SEMVER_LEVEL)
+
+          # Export the current version for further use
+          echo NEW_VERSION=$NEW_VERSION >> $GITHUB_ENV
+
+          echo "semver level:    $SEMVER_LEVEL"
+          echo "current version: $CURRENT_VERSION"
+          echo "new version:     $NEW_VERSION"
+
+      - name: Configure git
+        run: |
+          git config user.name "POLARIS Bot"
+          git config user.email "aws@polarislabs.com"
+
+      - name: Update and commit changelog
+        run: |
+          sed --in-place "s/x.x.x/$NEW_VERSION/" CHANGELOG.md
+
+          mv CHANGELOG.md docs/changelogs/$NEW_VERSION.md
+
+          cp .github/CHANGELOG.template.md CHANGELOG.md
+
+          git add CHANGELOG.md docs/changelogs
+          git commit -m 'Update changelog'
+
+      - name: Increment version
+        run: |
+          npm version $NEW_VERSION
+
+      - name: Push commits and tag
+        run: |
+          git push
+          git push origin v$NEW_VERSION
+
+    outputs:
+      new-version: ${{ env.NEW_VERSION }}
+
+  create-release:
+    name: Create GitHub Release
+    needs:
+      - bump-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: main
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.bump-version.outputs.new-version }}
+          release_name: Release v${{ needs.bump-version.outputs.new-version }}
+          body_path: docs/changelogs/${{ needs.bump-version.outputs.new-version }}.md
+          draft: false
+          prerelease: false
+
+  publish-to-npm:
+    name: Publish to NPM
+    needs:
+      - bump-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: main
+      - name: Use Node
+        uses: actions/setup-node@v2
+        with:
+          registry-url: https://registry.npmjs.org
+          scope: "@polarislabs"
+      - name: Switch to the Node version in the .nvmrc
+        shell: bash -l {0}
+        run: nvm install
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.POLARIS_BOT_TOKEN }}
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-to-github:
+    name: Publish to GitHub Packages
+    needs:
+      - bump-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: main
+      - name: Use Node
+        uses: actions/setup-node@v2
+        with:
+          registry-url: https://npm.pkg.github.com
+          scope: "@polarislabs"
+      - name: Switch to the Node version in the .nvmrc
+        shell: bash -l {0}
+        run: nvm install
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.POLARIS_BOT_TOKEN }}
+      - name: Publish to Github Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
