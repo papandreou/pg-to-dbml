@@ -49,7 +49,7 @@ jobs:
           CURRENT_VERSION=$(jq --raw-output .version package.json)
 
           # Find the new version number using the given semver label
-          NEW_VERSION=$(npx semver@7 --increment $CURRENT_VERSION $SEMVER_LEVEL)
+          NEW_VERSION=$(npx semver@7 --increment $SEMVER_LEVEL $CURRENT_VERSION)
 
           # Export the current version for further use
           echo NEW_VERSION=$NEW_VERSION >> $GITHUB_ENV
