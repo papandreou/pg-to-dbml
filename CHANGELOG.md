@@ -4,7 +4,6 @@
 
 ### Features
 
+- JIRA-123: Added this feature.
+
 ### Bug Fixes
-
-- DEVOPS-722: Fix the semver Action bumping the version number incorrectly.
-
