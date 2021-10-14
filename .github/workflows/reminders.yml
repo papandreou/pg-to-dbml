@@ -89,3 +89,49 @@ jobs:
               repo: context.repo.repo,
               body: "Please change the version number in the changelog to `x.x.x`. Then Github Actions will update it on PR merge.",
             }).then(() => process.exit(1));
+
+  unchanged-package-version:
+    name: Check for an unchanged version number
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Check for an unchanged version
+        id: unchanged-version-check
+        continue-on-error: true
+        run: |
+          # Get the commit that `main` was on at the time of branching off
+          BRANCH_POINT=$(git merge-base --fork-point origin/main | cut -c 1-7)
+
+          FILES="
+            package.json
+            package-lock.json
+          "
+
+          # Compare the version numbers, and exit with error if they don't match
+          for FILE in $FILES; do
+            BASE_VERSION=$(git show $BRANCH_POINT:$FILE | jq --raw-output .version)
+            CURRENT_VERSION=$(cat $FILE | jq --raw-output .version)
+
+            if [ "$BASE_VERSION" = "$CURRENT_VERSION" ]; then
+              echo "[INFO] Version number unchanged in the $FILE"
+            else
+              echo "[ERROR] Version numbers don't match:"
+              echo "[ERROR] $BRANCH_POINT:$FILE version: $BASE_VERSION"
+              echo "[ERROR] HEAD:$FILE version:    $CURRENT_VERSION"
+              exit 1
+            fi
+          done
+      - name: Comment
+        if: steps.unchanged-version-check.outcome == 'failure'
+        uses: actions/github-script@v4
+        with:
+          script: |
+            await github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "Please check that the version number hasn't been changed in the `package.json` and `package-lock.json`. Github Actions will update it on PR merge.",
+            }).then(() => process.exit(1));
