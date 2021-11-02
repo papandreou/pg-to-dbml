@@ -4,6 +4,6 @@
 
 ### Features
 
-- JIRA-123: Added this feature.
+- HPAPI-578: Update to Node 16.10.0.
 
 ### Bug Fixes
