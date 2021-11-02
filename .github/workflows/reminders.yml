@@ -133,5 +133,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "Please check that the version number hasn't been changed in the `package.json` and `package-lock.json`. Github Actions will update it on PR merge.",
+              body: "Whoops! The version number has been changed in the `package.json` and/or `package-lock.json`. Please undo your change to the version number. Github Actions will automatically update the package version on PR merge.",
             }).then(() => process.exit(1));
