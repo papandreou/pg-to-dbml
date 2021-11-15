@@ -160,3 +160,15 @@ jobs:
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  delete-packages:
+    name: Delete beta packages
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Delete packages
+        uses: smartsquaregmbh/delete-old-packages@v0.3.2
+        with:
+          version-pattern: "-pr${{ github.event.number }}-"
+          names: ${{ github.event.repository.name }}
