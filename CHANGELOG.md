@@ -4,6 +4,7 @@
 
 ### Features
 
-- JIRA-123: Added this feature.
+- DEVOPS-715: Auto-publish a beta package whenever Code Checks completes successfully.
+- Make Code Checks run only on a `pull_request` event, and for any file change.
 
 ### Bug Fixes
