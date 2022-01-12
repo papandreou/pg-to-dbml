@@ -1,0 +1,16 @@
+name: Code Checks
+
+on:
+  pull_request:
+
+jobs:
+  code-checks:
+    uses: polarislabs/github-actions/.github/workflows/code-checks.yml@v1
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+
+  publish-beta:
+    uses: polarislabs/github-actions/.github/workflows/publish-beta.yml@v1
+    needs: code-checks
+    secrets:
+      NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
