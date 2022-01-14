@@ -1,0 +1,10 @@
+name: Delete Betas
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  delete-beta:
+    uses: polarislabs/github-actions/.github/workflows/delete-beta-packages.yml@v1
