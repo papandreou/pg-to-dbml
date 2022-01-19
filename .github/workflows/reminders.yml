@@ -55,19 +55,6 @@ jobs:
               }).then(() => process.exit(1));
             }
 
-  changelog:
-    name: Check for updated changelog
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Changelog Reminder
-        uses: peterjgrainger/action-changelog-reminder@v1.3.0
-        with:
-          changelog_regex: "/CHANGELOG.md"
-          customPrMessage: "**Reminder**: For a new feature or bugfix, please be awesome 🔥 and update the **CHANGELOG.md** 📝. Thank you. 🙏"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   empty-changelog-version:
     name: Check for empty version number in changelog
     runs-on: ubuntu-latest
