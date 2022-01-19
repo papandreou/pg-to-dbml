@@ -4,7 +4,6 @@
 
 ### Features
 
-- DEVOPS-710:
-  - Delete beta packages when a PR is closed.  Uses a reusable workflow from `polarislabs/github-actions` repository
+- JIRA-123: Added this feature.
 
 ### Bug Fixes
