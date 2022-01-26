@@ -4,6 +4,6 @@
 
 ### Features
 
-- JIRA-123: Added this feature.
+- DEVOPS-770: Clean up unneeded Github Actions.
 
 ### Bug Fixes
