@@ -1,0 +1,34 @@
+{
+  "extends": [
+    "config:base",
+    ":rebaseStalePrs"
+  ],
+  // Only scan for npm package changes, and not Dockerfile, Kubernetes, or NVM changes.
+  "enabledManagers": [
+    "npm"
+  ],
+  "hostRules": [
+    {
+      "matchHost": "https://npm.pkg.github.com/",
+      "hostType": "npm",
+      // Set up the _authToken for the .npmrc file.
+      // This is encrypted with the Renovate public key, so it's safe to have in plaintext here.
+      "encrypted": {
+        "token": "wcFMA/xDdHCJBTolAQ/+OelnZYoaFPTchB187QDZMWMARXgUL6ojaUq3bd20EY98ocV6t+nMvg0kBTvOXfJvZhfbqXw7NvGhBt6Ug3fUtrsJi1+/iZvHpZEGAEQ0tC8t2JCzcp58ckbYuJHXs6LUt6fTREJ+iQ6gPk0btFWxRMIN0lwvzpiPoArpR8r0qoSLTwok6HMcfjQEf8Caf2Y793CPqilghGJ1G+mZ6FWtsDqXYfHOeg+CBZz6WzcOZ4E9HN/sQpk2s2AKmEM+VuC91oEgRsJul06Sx6aujaWNAUwTCt1mPChKB5GZAAl58jGiq7157BgxsprYKH6Dqa9TqtTkLT7rqTYVlk9Dhm4sFwyDamUA1EyWEGiGTn9cCa11PW1UoGVKMf5k9qlLARH1K8lXiHwH/0M6W5oeIo+/FHBqYBcxkhmyPY27MQaRbIETvhz+3FXV3nr/oIpc7L+3dd+09kzHqt2NIe748CHQfeltnag+MORo0LxVH56QwuzH5BOXb3xrkm+CSpFQ/PKQ/HrN5FAHF3rPnCtzf/yJnvkbS1YoGT/IjbxzZtF+9qtk8hFoKH5QU9QqxmskP9Tef0ae/+TNHJOSfBj/oX5+rlulgaTy4/j1h4RUFVS12wnFGAxPPRD8MfIMymKd/Rcw5YXu3BHqHQzxwDNmH0mZv1klEBZz96x+FqUfjn0GXj/SegFtUBsqoQhB6Vya+ELjJ93acI7gfRykvs1Di7064Mvp/HZSp/7sGdj/zyGlap5aTXkfSJ8A6cTzRP/6bJhORMI9Y4wdGgw+lVCNCfvy/sJJOQnMB1NseHOijKB8XWOUsPTtSOOFG5TtU/26jM535SAwKT5Rj6Eb9HfX"
+      }
+    }
+  ],
+  "npmrc": "@polarislabs:registry=https://npm.pkg.github.com/",
+  "packageRules": [
+    {
+      // Disable npm package scanning for everything but @polarislabs packages.
+      "enabled": false,
+      "packagePatterns": [
+        "*"
+      ],
+      "excludePackagePatterns": [
+        "polarislabs"
+      ]
+    }
+  ]
+}
