@@ -4,6 +4,6 @@
 
 ### Features
 
-- JIRA-123: Added this feature.
+- DEVOPS-778: Clean up duplicate Github Actions.
 
 ### Bug Fixes
