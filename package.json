@@ -29,7 +29,7 @@
     "pg-to-dbml": "index.js"
   },
   "devDependencies": {
-    "@polarislabs/eslint-config-polaris": "^1.2.5",
+    "@polarislabs/eslint-config-polaris": "1.2.6",
     "@types/jest": "^26.0.19",
     "@types/node": "16.10.0",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
