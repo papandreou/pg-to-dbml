@@ -4,6 +4,6 @@
 
 ### Features
 
-- DEVOPS-775: Add a `.github/renovate.json5` file to configure Renovate to just update our internal `@polarislabs/*` npm packages.
+- JIRA-123: Added this feature.
 
 ### Bug Fixes
