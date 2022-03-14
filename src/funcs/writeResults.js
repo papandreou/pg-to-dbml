@@ -3,6 +3,7 @@ const path = require('path');
 const yargs = require('yargs');
 
 const transformTableStructureToDBML = require('./transformTableStructureToDBML');
+const transformEnumToDBML = require('./transformEnumToDBML');
 const transformFKsToRefsDBML = require('./transformFKsToRefsDBML');
 
 const createFile = require('../utils/createFile');
@@ -45,7 +46,7 @@ module.exports = schemaStructures => {
 
   const columnGetter = getColumnGetter(schemaStructures);
 
-  return schemaStructures.forEach(({ constraints, schema, tables }) => {
+  return schemaStructures.forEach(({ constraints, schema, tables, enums }) => {
     if (splitDbmlBySchema) {
       filePathWithName = getFileName({
         dbName,
@@ -56,6 +57,11 @@ module.exports = schemaStructures => {
 
       createFile(filePathWithName);
     }
+
+    enums.forEach(enumDefinition => {
+      const dbml = transformEnumToDBML(enumDefinition, schema, includeSchemaName);
+      writeToFile(filePathWithName, dbml);
+    });
 
     tables.forEach(tableDefinition => {
       const dbml = transformTableStructureToDBML(tableDefinition, schema, includeSchemaName);
