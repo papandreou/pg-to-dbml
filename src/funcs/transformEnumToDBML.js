@@ -5,7 +5,7 @@ module.exports = function transformEnumToDBML(
   schemaName,
   includeSchemaName
 ) {
-  // It seems like DBML doesn't support a comment on the enum itself, so the comment isn't used for now
+  // It seems like dbdocs.io doesn't support a comment on the enum itself, so the comment isn't used for now
 
   const enumNameString = includeSchemaName ? `${schemaName}.${name}` : name;
 
