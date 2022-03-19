@@ -14,16 +14,16 @@ module.exports = async function getReferencedEnums({ schema, allTableStructures 
     return [];
   }
 
-  const enumInfoQuery = (schemaName, typeNames) => `select t.typname as name,
+  const { rows } = await db.client.query(
+    `select t.typname as name,
     pg_catalog.obj_description(enumtypid) as comment,
     array_agg(e.enumlabel::text) as values
     from pg_type t
     left join pg_enum e on t.oid = e.enumtypid
     join pg_catalog.pg_namespace n on n.oid = t.typnamespace
-    where n.nspname = '${schemaName}' and t.typcategory = 'E' and t.typname in (${typeNames.map(
-    typeName => `'${typeName}'`
-  )}) group by 1, 2`;
-
-  const { rows } = await db.client.query(enumInfoQuery(schema, referencedUdtNames));
+    where n.nspname = $1 and t.typcategory = 'E' and t.typname = ANY($2)
+    group by 1, 2`,
+    [schema, referencedUdtNames]
+  );
   return rows;
 };
