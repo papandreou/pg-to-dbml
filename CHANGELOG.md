@@ -4,6 +4,6 @@
 
 ### Features
 
-- JIRA-123: Added this feature.
+- DEVOPS-895: Fix NVM in our Github Actions.
 
 ### Bug Fixes

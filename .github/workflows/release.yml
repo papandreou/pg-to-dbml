@@ -118,13 +118,11 @@ jobs:
         with:
           ref: main
       - name: Use Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
+          node-version-file: ".nvmrc"
           registry-url: https://registry.npmjs.org
           scope: "@polarislabs"
-      - name: Switch to the Node version in the .nvmrc
-        shell: bash -l {0}
-        run: nvm install
       - name: Install dependencies
         run: npm ci
         env:
@@ -145,13 +143,11 @@ jobs:
         with:
           ref: main
       - name: Use Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
+          node-version-file: ".nvmrc"
           registry-url: https://npm.pkg.github.com
           scope: "@polarislabs"
-      - name: Switch to the Node version in the .nvmrc
-        shell: bash -l {0}
-        run: nvm install
       - name: Install dependencies
         run: npm ci
         env:
