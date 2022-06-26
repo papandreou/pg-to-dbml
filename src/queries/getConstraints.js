@@ -1,11 +1,13 @@
 const db = require('../db');
 
 const getQuery = schemaName => `
-  SELECT conrelid::regclass AS from_schema_table,
+  SELECT conrelid::regclass AS from_table,
+    (SELECT pg_namespace.nspname FROM pg_class INNER JOIN pg_namespace ON pg_class.relnamespace = pg_namespace.oid WHERE conrelid = pg_class.oid) AS from_schema,
     conname AS constraint_name,
     conkey AS table_from_constraint_columns,
     pg_get_constraintdef(oid) AS constraint_definition,
-    confrelid::regclass AS to_schema_table,
+    confrelid::regclass AS to_table,
+    (SELECT pg_namespace.nspname FROM pg_class INNER JOIN pg_namespace ON pg_class.relnamespace = pg_namespace.oid WHERE conrelid = pg_class.oid) AS to_schema,
     confkey AS table_to_contstraint_columns,
     connamespace
   FROM   pg_constraint pgc
@@ -21,6 +23,17 @@ const getConstraintType = constraintDefinition => {
   return constraintDefinition;
 };
 
+function resolveSchemaAndTable(schema, table) {
+  if (table === '-') {
+    return [];
+  }
+  if (table.includes('.')) {
+    const [schemaFromTable, tableWithoutSchema] = table.split('.');
+    return [schema ?? schemaFromTable, tableWithoutSchema];
+  }
+  return [schema, table];
+}
+
 module.exports = async function getConstraints(schemaName) {
   const query = getQuery(schemaName);
   const res = await db.client.query(query);
@@ -29,13 +42,15 @@ module.exports = async function getConstraints(schemaName) {
     ({
       constraint_definition: constraintDefinition,
       constraint_name: constraintName,
-      from_schema_table: fromSchemaTable,
-      to_schema_table: toSchemaTable,
+      from_schema: fromSchema,
+      from_table: fromTable,
+      to_schema: toSchema,
+      to_table: toTable,
       table_from_constraint_columns: fromColumns,
       table_to_contstraint_columns: toColumns
     }) => {
-      const [fromSchema, fromTable] = fromSchemaTable.split('.');
-      const [toSchema, toTable] = toSchemaTable === '-' ? [] : toSchemaTable.split('.');
+      [fromSchema, fromTable] = resolveSchemaAndTable(fromSchema, fromTable);
+      [toSchema, toTable] = resolveSchemaAndTable(toSchema, toTable);
 
       return {
         constraintDefinition,
