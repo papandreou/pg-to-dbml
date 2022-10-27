@@ -21,7 +21,7 @@ module.exports = function getColumnSettings(col) {
   const notNullSetting = !isNullable && 'not null';
   if (notNullSetting) columnSettings.unshift(notNullSetting);
 
-  const note = columnComment && `note: '${columnComment}'`;
+  const note = columnComment && `note: '${columnComment.replace(/'/g, "\\'")}'`;
   if (note) columnSettings.unshift(note);
 
   return columnSettings.length > 0 ? `[${columnSettings.join(', ')}]` : '';
