@@ -28,10 +28,12 @@ module.exports = function transformFKsToRefsDBML(
         console.log('foreignRelation is undefined!');
       }
 
-      const fromString = includeSchemaName ? `${fromSchema}.${cleanFromTable}` : cleanFromTable;
-      const toString = includeSchemaName ? `${toSchema}.${cleanToTable}` : cleanToTable;
+      const fromString = includeSchemaName
+        ? `${fromSchema}."${cleanFromTable}"`
+        : `"${cleanFromTable}"`;
+      const toString = includeSchemaName ? `${toSchema}."${cleanToTable}"` : `"${cleanToTable}"`;
 
-      return `${EOL}Ref: "${fromString}".${foreignKey.column_name} > "${toString}".${foreignRelation.column_name}`;
+      return `${EOL}Ref: ${fromString}.${foreignKey.column_name} > ${toString}.${foreignRelation.column_name}`;
     })
     .join(``);
 
