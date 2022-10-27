@@ -1,6 +1,6 @@
 {
   "name": "pg-to-dbml-papandreou",
-  "version": "0.3.7-patch3",
+  "version": "0.3.7-patch4",
   "engines": {
     "node": "16.10.0"
   },
