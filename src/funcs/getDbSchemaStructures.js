@@ -1,6 +1,7 @@
 const getSchemas = require('../queries/getSchemas');
 const getTablesInSchema = require('../queries/getTablesInSchema');
 const getTableStructure = require('../queries/getTableStructure');
+const getReferencedEnums = require('../queries/getReferencedEnums');
 const getConstraints = require('../queries/getConstraints');
 
 const getPrimaryKey = (schema, tableName, constraints) => {
@@ -81,9 +82,12 @@ module.exports = async function getDbSchemaStructures(argv) {
   const getAllColumnDefs = allTables.map(async ({ constraints, schema, tables }) => {
     const allTableStructures = await getTableStructuresForSchema({ constraints, schema, tables });
 
+    const enums = await getReferencedEnums({ schema, allTableStructures });
+
     return {
       constraints,
       schema,
+      enums,
       tables: allTableStructures
     };
   });
