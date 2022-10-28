@@ -1,5 +1,6 @@
 const Yargs = require('yargs');
 const toDbml = require('./commands/to-dbml');
+const pgConnectionString = require('pg-connection-string');
 
 function builder(myYargs) {
   return myYargs
@@ -12,8 +13,8 @@ function builder(myYargs) {
       },
       db_name: {
         alias: 'db',
-        demandOption: true,
-        describe: 'database name you want to create dbml file(s) from.'
+        describe:
+          'database name you want to create dbml file(s) from. Required if and only if the database name is not part of the connection string'
       },
       exclude_schemas: {
         alias: 'S',
@@ -45,7 +46,18 @@ function builder(myYargs) {
     .nargs('t', 1)
     .alias('t', 'timeout')
     .describe('t', 'how long you want process to run (in milliseconds) before it exits process.')
-    .default('t', 5000);
+    .default('t', 5000)
+    .check(({ connection_string, db }) => {
+      const databaseInConnectionString = pgConnectionString.parse(connection_string).database;
+      if (databaseInConnectionString) {
+        if (db) {
+          return 'You cannot specify the database name separately with the --db switch when it is part of the connection string';
+        }
+      } else if (!db) {
+        return 'You must specify the database name as part of the connection string, or separately via the --db switch';
+      }
+      return true;
+    });
 }
 
 // eslint-disable-next-line no-unused-expressions
