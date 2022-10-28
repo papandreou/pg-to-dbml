@@ -21,7 +21,7 @@ module.exports = {
     return client;
   },
   get dbName() {
-    return this.client.connectionParameters.database;
+    return client.connectionParameters.database;
   },
   initialize
 };

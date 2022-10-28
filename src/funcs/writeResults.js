@@ -8,6 +8,7 @@ const transformFKsToRefsDBML = require('./transformFKsToRefsDBML');
 
 const createFile = require('../utils/createFile');
 const writeToFile = require('../utils/writeToFile');
+const db = require('../db');
 
 const getFileName = ({ dbName, dir, schema, splitDbmlBySchema }) => {
   const fileName = splitDbmlBySchema ? `${dbName}.${schema}` : dbName;
@@ -28,7 +29,8 @@ const getColumnGetter = schemas => (schemaName, tableName, ordinalPosition) => {
 };
 
 module.exports = schemaStructures => {
-  const { db: dbName, o: outputDir, separate_dbml_by_schema: splitDbmlBySchema } = yargs.argv;
+  const { o: outputDir, separate_dbml_by_schema: splitDbmlBySchema } = yargs.argv;
+  const { dbName } = db;
   const dir = outputDir || './';
 
   const includeSchemaName = schemaStructures.length > 1 && !splitDbmlBySchema;
