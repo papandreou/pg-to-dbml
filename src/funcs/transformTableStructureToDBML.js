@@ -8,7 +8,7 @@ module.exports = function transformTableStructureToDBML(
 ) {
   const columns = colDefs && Array.isArray(colDefs) ? colDefs : [];
   const columnDefinitions = columns.map(column => getColumnDefinition(column, primaryKeys));
-  const tableNameString = includeSchemaName ? `${schemaName}."${tableName}"` : `"${tableName}"`;
+  const tableNameString = includeSchemaName ? `"${schemaName}"."${tableName}"` : `"${tableName}"`;
   columnDefinitions.unshift(`Table ${tableNameString} {`);
   columnDefinitions.push(`} ${EOL} ${EOL} `);
 

@@ -31,7 +31,7 @@ module.exports = function transformFKsToRefsDBML(
       const fromString = includeSchemaName
         ? `${fromSchema}."${cleanFromTable}"`
         : `"${cleanFromTable}"`;
-      const toString = includeSchemaName ? `${toSchema}."${cleanToTable}"` : `"${cleanToTable}"`;
+      const toString = includeSchemaName ? `"${toSchema}"."${cleanToTable}"` : `"${cleanToTable}"`;
 
       return `${EOL}Ref: ${fromString}.${foreignKey.column_name} > ${toString}.${foreignRelation.column_name}`;
     })
