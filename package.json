@@ -50,10 +50,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/polarislabs/pg-to-dbml.git"
+    "url": "git+https://github.com/papandreou/pg-to-dbml.git"
   },
   "bugs": {
-    "url": "https://github.com/polarislabs/pg-to-dbml/issues"
+    "url": "https://github.com/papandreou/pg-to-dbml/issues"
   },
-  "homepage": "https://github.com/polarislabs/pg-to-dbml#readme"
+  "homepage": "https://github.com/papandreou/pg-to-dbml#readme"
 }
