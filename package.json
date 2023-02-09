@@ -1,6 +1,6 @@
 {
   "name": "pg-to-dbml-papandreou",
-  "version": "0.3.7-patch9",
+  "version": "0.3.7-patch10",
   "description": "CLI tool to scan your postgres database, and output DBML.",
   "main": "index.js",
   "scripts": {
