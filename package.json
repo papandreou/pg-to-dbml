@@ -1,5 +1,5 @@
 {
-  "name": "@polarislabs/pg-to-dbml",
+  "name": "pg-to-dbml",
   "version": "0.3.7",
   "engines": {
     "node": "16.10.0"
