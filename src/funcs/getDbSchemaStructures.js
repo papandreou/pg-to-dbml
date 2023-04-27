@@ -1,6 +1,8 @@
 const getSchemas = require('../queries/getSchemas');
 const getTablesInSchema = require('../queries/getTablesInSchema');
 const getTableStructure = require('../queries/getTableStructure');
+const getTableComment = require('../queries/getTableComment');
+const getReferencedEnums = require('../queries/getReferencedEnums');
 const getConstraints = require('../queries/getConstraints');
 
 const getPrimaryKey = (schema, tableName, constraints) => {
@@ -46,6 +48,7 @@ async function getTableStructuresForSchema({ schema, tables, constraints }) {
   const promises = tables.map(async tableName => {
     const structure = await getTableStructure(schema, tableName);
     const primaryKey = getPrimaryKey(schema, tableName, constraints);
+    const comment = await getTableComment(schema, tableName);
 
     const structureWithConstraints = structure.map(column => {
       const isPrimary = primaryKey && primaryKey.fromColumns.includes(column.ordinal_position);
@@ -58,7 +61,8 @@ async function getTableStructuresForSchema({ schema, tables, constraints }) {
 
     return {
       structure: structureWithConstraints,
-      tableName
+      tableName,
+      comment
     };
   });
 
@@ -81,9 +85,12 @@ module.exports = async function getDbSchemaStructures(argv) {
   const getAllColumnDefs = allTables.map(async ({ constraints, schema, tables }) => {
     const allTableStructures = await getTableStructuresForSchema({ constraints, schema, tables });
 
+    const enums = await getReferencedEnums({ schema, allTableStructures });
+
     return {
       constraints,
       schema,
+      enums,
       tables: allTableStructures
     };
   });

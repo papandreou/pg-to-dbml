@@ -3,10 +3,12 @@ const path = require('path');
 const yargs = require('yargs');
 
 const transformTableStructureToDBML = require('./transformTableStructureToDBML');
+const transformEnumToDBML = require('./transformEnumToDBML');
 const transformFKsToRefsDBML = require('./transformFKsToRefsDBML');
 
 const createFile = require('../utils/createFile');
 const writeToFile = require('../utils/writeToFile');
+const db = require('../db');
 
 const getFileName = ({ dbName, dir, schema, splitDbmlBySchema }) => {
   const fileName = splitDbmlBySchema ? `${dbName}.${schema}` : dbName;
@@ -27,7 +29,8 @@ const getColumnGetter = schemas => (schemaName, tableName, ordinalPosition) => {
 };
 
 module.exports = schemaStructures => {
-  const { db: dbName, o: outputDir, separate_dbml_by_schema: splitDbmlBySchema } = yargs.argv;
+  const { o: outputDir, separate_dbml_by_schema: splitDbmlBySchema } = yargs.argv;
+  const { dbName } = db;
   const dir = outputDir || './';
 
   const includeSchemaName = schemaStructures.length > 1 && !splitDbmlBySchema;
@@ -45,7 +48,7 @@ module.exports = schemaStructures => {
 
   const columnGetter = getColumnGetter(schemaStructures);
 
-  return schemaStructures.forEach(({ constraints, schema, tables }) => {
+  return schemaStructures.forEach(({ constraints, schema, tables, enums }) => {
     if (splitDbmlBySchema) {
       filePathWithName = getFileName({
         dbName,
@@ -56,6 +59,11 @@ module.exports = schemaStructures => {
 
       createFile(filePathWithName);
     }
+
+    enums.forEach(enumDefinition => {
+      const dbml = transformEnumToDBML(enumDefinition, schema, includeSchemaName);
+      writeToFile(filePathWithName, dbml);
+    });
 
     tables.forEach(tableDefinition => {
       const dbml = transformTableStructureToDBML(tableDefinition, schema, includeSchemaName);
